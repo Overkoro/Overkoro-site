@@ -18,7 +18,7 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); padding: 2.5rem 5%; }
+    body { background-color: var(--bg-color); color: var(--text-main); padding: 2.5rem 5%; display: none; } /* Caché par défaut avant authentification */
 
     header {
       display: flex; justify-content: space-between; align-items: center;
@@ -143,6 +143,19 @@
   </div>
 
   <script>
+    // Vérification du mot de passe administrateur dès l'ouverture
+    const adminPassword = "Overkoro@2013!";
+    const enteredPassword = prompt("Veuillez entrer le mot de passe administrateur :");
+
+    if (enteredPassword === adminPassword) {
+      document.body.style.display = "block"; // Affiche le panel si le mot de passe est correct
+      loadAdminData();
+    } else {
+      alert("Mot de passe incorrect ! Accès refusé.");
+      document.body.innerHTML = "<h2 style='color:#ef4444; text-align:center; margin-top:20vh;'>🔒 Accès non autorisé. Rechargez la page pour réessayer.</h2>";
+      document.body.style.display = "block";
+    }
+
     function loadAdminData() {
       const users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
       const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
@@ -442,8 +455,6 @@
         loadAdminData();
       }
     }
-
-    loadAdminData();
   </script>
 </body>
 </html>
