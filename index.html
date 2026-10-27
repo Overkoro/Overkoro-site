@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">Overkoro — Portfolio & Espace Client</title>
+  <style>
+    :root {
+      --bg-color: #0d0f12;
+      --card-bg: #161920;
+      --card-bg-hover: #1f242e;
+      --accent-color: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7);
+      --god-gradient: linear-gradient(135deg, #f59e0b, #ef4444, #a855f7);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #262b36;
+      --success-color: #22c55e;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --revolut-color: #0075eb;
+    }
+
+    body.light-mode {
+      --bg-color: #f3f4f6;
+      --card-bg: #ffffff;
+      --card-bg-hover: #f9fafb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+    }
+
+    body.theme-cyan { --accent-color: #06b6d4; --accent-hover: #0891b2; --accent-gradient: linear-gradient(135deg, #06b6d4, #3b82f6); }
+    body.theme-emerald { --accent-color: #10b981; --accent-hover: #059669; --accent-gradient: linear-gradient(135deg, #10b981, #14b8a6); }
+    body.theme-gold { --accent-color: #f59e0b; --accent-hover: #d97706; --accent-gradient: linear-gradient(135deg, #f59e0b, #ef4444); }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; scroll-behavior: smooth; }
+    body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; transition: background-color 0.3s, color 0.3s; }
+
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 8%; border-bottom: 1px solid var(--border-color);
+      background: var(--card-bg); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px);
+    }
+
+    .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; }
+    .logo span { color: var(--accent-color); }
+
+    nav { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .nav-tab {
+      background: transparent; color: var(--text-muted); border: none; padding: 0.5rem 0.8rem;
+      font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 6px; transition: all 0.2s;
+    }
+    .nav-tab:hover { color: var(--text-main); }
+    .nav-tab.active { color: var(--text-main); background: var(--card-bg-hover); border: 1px solid var(--border-color); }
+
+    .theme-picker select {
+      background: var(--card-bg-hover); color: var(--text-main); border: 1px solid var(--border-color);
+      padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer;
+    }
+
+    .btn { padding: 0.7rem 1.4rem; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+    .btn-primary { background: var(--accent-color); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary { background: var(--card-bg-hover); color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-download { background: var(--success-color); color: #fff; font-size: 0.85rem; padding: 0.5rem 1rem; margin-top: 0.6rem; }
+    .btn-download:hover { background: #16a34a; }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    section { padding: 3rem 8%; max-width: 1200px; margin: 0 auto; }
+    h2 { text-align: center; font-size: 2rem; margin-bottom: 2rem; }
+    h3 { margin-bottom: 1rem; font-size: 1.2rem; }
+
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .price-card {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 2rem 1.5rem; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .price-card.featured { border-color: var(--accent-color); }
+    .price-card.god-tier { border-color: #f59e0b; box-shadow: 0 0 25px rgba(245,158,11,0.25); }
+    
+    .price-tag {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--accent-gradient); color: #fff; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 50px;
+      white-space: nowrap;
+    }
+    .price-tag.god-tag { background: var(--god-gradient); }
+
+    .price-amount { font-size: 2.2rem; font-weight: 800; margin: 0.8rem 0; }
+    .price-amount span { font-size: 0.85rem; color: var(--text-muted); font-weight: 400; }
+
+    .price-features { list-style: none; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; text-align: left; }
+    .price-features li { margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .price-features li::before { content: "✓"; color: var(--success-color); font-weight: bold; }
+
+    .payment-policy-notice {
+      background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning-color);
+      border-radius: 12px; padding: 1.2rem; margin-bottom: 2rem; text-align: center; font-size: 0.9rem; color: var(--text-main);
+    }
+
+    .cat-tabs { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+    .cat-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .cat-btn.active { background: var(--accent-color); color: #fff; }
+    .cat-content { display: none; }
+    .cat-content.active { display: block; }
+
+    .auth-box, .dashboard-box {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 2.5rem; max-width: 850px; margin: 2rem auto;
+    }
+    .form-group { margin-bottom: 1.2rem; text-align: left; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.7rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-size: 0.95rem;
+    }
+
+    .order-card {
+      background: var(--card-bg-hover); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.2rem; margin-bottom: 1.5rem;
+    }
+    .status-badge { display: inline-block; padding: 0.25rem 0.7rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; }
+    .status-Reçue { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+    .status-En-attente-justificatif { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .status-En-cours { background: rgba(37, 99, 235, 0.2); color: #3b82f6; }
+    .status-Terminée { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .status-Refusée { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+    .chat-box {
+      background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px;
+      padding: 1rem; margin-top: 1rem; max-height: 200px; overflow-y: auto; font-size: 0.85rem;
+    }
+    .msg { margin-bottom: 0.5rem; padding: 0.4rem 0.8rem; border-radius: 6px; width: fit-content; max-width: 80%; }
+    .msg.client { background: rgba(99,102,241,0.2); color: var(--text-main); margin-left: auto; text-align: right; }
+    .msg.admin { background: rgba(34,197,94,0.2); color: var(--text-main); }
+
+    .calc-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; max-width: 850px; margin: 2rem auto; }
+
+    .payment-links-box {
+      background: var(--card-bg-hover); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .payment-btn-revolut { background: var(--revolut-color); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; text-decoration: none; padding: 0.8rem; border-radius: 8px; transition: opacity 0.2s; }
+    .payment-btn-revolut:hover { opacity: 0.9; }
+    .payment-btn-paypal-soon { background: #333; color: var(--text-muted); font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.8rem; border-radius: 8px; cursor: not-allowed; border: 1px dashed var(--border-color); }
+
+    .patchnote-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.2rem; }
+
+    footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-color); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">OVERKORO<span>.</span></div>
+    <nav>
+      <button class="nav-tab active" onclick="switchPage('home')">Accueil</button>
+      <button class="nav-tab" onclick="switchPage('offres')">Formules & Passes</button>
+      <button class="nav-tab" onclick="switchPage('calculator')">🧮 Devis en Ligne</button>
+      <button class="nav-tab" onclick="switchPage('patchnotes')">📋 Patch Notes</button>
+      <button class="nav-tab" onclick="switchPage('account')" id="accountTabNav">Espace Client</button>
+
+      <button class="nav-tab" onclick="toggleLightMode()" id="lightModeBtn">🌙 Sombre</button>
+
+      <div class="theme-picker">
+        <select id="themeSelector" onchange="changeTheme(this.value)">
+          <option value="default">💜 Violet</option>
+          <option value="cyan">🩵 Cyan</option>
+          <option value="emerald">💚 Émeraude</option>
+          <option value="gold">💛 Or</option>
+        </select>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ACCUEIL -->
+    <div id="page-home" class="page-section active">
+      <section style="text-align: center; padding: 4rem 8%;">
+        <h1 style="font-size: 2.8rem; margin-bottom: 1rem;">Montage Vidéo Dynamique <span style="background:var(--accent-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">YouTube & TikTok</span></h1>
+        <p style="color:var(--text-muted); margin-bottom: 2rem;">Cuts rythmés, sous-titres animés et sound design sous Premiere Pro & After Effects.</p>
+        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="switchPage('offres')">Voir les formules</button>
+          <button class="btn btn-secondary" onclick="switchPage('calculator')">Calculer un devis instantané</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- CALCULATEUR -->
+    <div id="page-calculator" class="page-section">
+      <section>
+        <h2>Calculateur de Devis Interactif</h2>
+        <div class="calc-box">
+          <div class="form-group">
+            <label>Nombre de Shorts / TikToks (5€ / unité)</label>
+            <input type="number" id="calcShorts" min="0" value="0" oninput="calculateDevis()">
+          </div>
+          <div class="form-group">
+            <label>Nombre de Vidéos Longues (15€ / unité)</label>
+            <input type="number" id="calcLongs" min="0" value="0" oninput="calculateDevis()">
+          </div>
+          <div class="form-group">
+            <label>Options & Suppléments</label>
+            <div style="display:flex; gap:1rem; flex-direction:column; margin-top:0.4rem;">
+              <label style="font-weight:normal; font-size:0.9rem;"><input type="checkbox" id="calcMiniature" onchange="calculateDevis()"> Miniatures YouTube Pro (+4€)</label>
+              <label style="font-weight:normal; font-size:0.9rem;"><input type="checkbox" id="calcEdu" onchange="calculateDevis()"> Statut Étudiant / Édu (-40% sur le total)</label>
+            </div>
+          </div>
+          <div style="background:var(--card-bg-hover); padding:1.2rem; border-radius:10px; text-align:center; margin-top:1.5rem;">
+            <p style="font-size:0.9rem; color:var(--text-muted);">Estimation du montant total :</p>
+            <h3 id="calcTotal" style="font-size:2.5rem; color:var(--accent-color); margin:0.4rem 0;">0 €</h3>
+            <p id="calcDelay" style="font-size:0.85rem; color:var(--text-muted);">Délai estimé : 24 à 48h</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- FORMULES -->
+    <div id="page-offres" class="page-section">
+      <section>
+        <h2>Toutes les Formules & Passes</h2>
+        
+        <div class="payment-policy-notice">
+          <p>⚠️ <strong>Règle importante :</strong> Les paiements doivent impérativement être effectués avant l'envoi du lien de téléchargement final. Aucun fichier ne sera transmis sans règlement préalable.</p>
+        </div>
+
+        <div class="cat-tabs">
+          <button class="cat-btn active" onclick="switchCategory('particuliers')">👤 Particuliers & Créateurs</button>
+          <button class="cat-btn" onclick="switchCategory('etudiants')">🎓 Étudiants & Écoles (-40%)</button>
+          <button class="cat-btn" onclick="switchCategory('business')">💼 Business & Entreprises</button>
+        </div>
+
+        <!-- PARTICULIERS -->
+        <div id="cat-particuliers" class="cat-content active">
+          <h3>Prestations Unitaires & Passes</h3>
+          <div class="pricing-grid">
+            <div class="price-card">
+              <div>
+                <h3>1 Short / TikTok</h3>
+                <div class="price-amount">5 €</div>
+                <ul class="price-features">
+                  <li>Durée jusqu'à 60s</li>
+                  <li>Sous-titres animés & Zooms</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('1 Short / TikTok (5€)')">Commander</button>
+            </div>
+
+            <div class="price-card featured">
+              <div class="price-tag">1 Short Offert</div>
+              <div>
+                <h3>Pack 5 Shorts</h3>
+                <div class="price-amount">20 € <span>/ 25€</span></div>
+                <ul class="price-features">
+                  <li>5 Shorts / TikToks</li>
+                  <li>4€ au lieu de 5€ / unité</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('Pack 5 Shorts (20€)')">Commander</button>
+            </div>
+
+            <div class="price-card">
+              <div>
+                <h3>1 Vidéo Longue</h3>
+                <div class="price-amount">15 €</div>
+                <ul class="price-features">
+                  <li>Format YouTube / VOD</li>
+                  <li>Cut & Dérushage dynamique</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('1 Vidéo Longue (15€)')">Commander</button>
+            </div>
+
+            <div class="price-card">
+              <div>
+                <h3>Pack 5 Vidéos Longues</h3>
+                <div class="price-amount">65 € <span>/ 75€</span></div>
+                <ul class="price-features">
+                  <li>5 Vidéos Longues / VOD</li>
+                  <li>13€ au lieu de 15€ / unité</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('Pack 5 Vidéos Longues (65€)')">Commander</button>
+            </div>
+
+            <div class="price-card">
+              <div>
+                <h3>Pass Starter</h3>
+                <div class="price-amount">30 € <span>/ mois</span></div>
+                <ul class="price-features">
+                  <li>5 Shorts + 1 Vidéo Longue</li>
+                  <li>Idéal pour démarrer</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('Pass Starter (30€)')">Commander</button>
+            </div>
+
+            <div class="price-card featured">
+              <div class="price-tag">Populaire</div>
+              <div>
+                <h3>Pass Pro</h3>
+                <div class="price-amount">80 € <span>/ mois</span></div>
+                <ul class="price-features">
+                  <li>15 Shorts + 3 Vidéos Longues</li>
+                  <li>Suivi prioritaire</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('Pass Pro (80€)')">Commander</button>
+            </div>
+
+            <div class="price-card">
+              <div>
+                <h3>Pass Ultra VIP</h3>
+                <div class="price-amount">140 € <span>/ mois</span></div>
+                <ul class="price-features">
+                  <li>25 Shorts + 6 Vidéos Longues</li>
+                  <li>Accompagnement éditorial</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('Pass Ultra VIP (140€)')">Commander</button>
+            </div>
+
+            <div class="price-card god-tier">
+              <div class="price-tag god-tag">GOD MODE</div>
+              <div>
+                <h3>⚡ Pass Dieu</h3>
+                <div class="price-amount" style="color:#f59e0b;">250 € <span>/ mois</span></div>
+                <ul class="price-features">
+                  <li>40 Shorts + 10 Vidéos Longues</li>
+                  <li>Retouches illimitées</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" style="background:var(--god-gradient);" onclick="openOrderModal('Pass Dieu GOD MODE (250€)')">Activer GOD MODE</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ETUDIANTS -->
+        <div id="cat-etudiants" class="cat-content">
+          <div class="student-notice" style="background: rgba(99, 102, 241, 0.1); border: 1px solid var(--accent-color); border-radius: 12px; padding: 1.2rem; margin-bottom: 2rem; text-align: center;">
+            <p>🎓 Remise globale ~40% (Lien de justificatif scolaire requis : Drive, Imgur, etc.).</p>
+          </div>
+
+          <div class="pricing-grid">
+            <div class="price-card">
+              <div>
+                <h3>1 Short (Édu)</h3>
+                <div class="price-amount">3 € <span>/ 5€</span></div>
+                <ul class="price-features">
+                  <li>Sous-titres animés</li>
+                  <li>Sound design & Zooms</li>
+                </ul>
+              </div>
+              <button class="btn btn-secondary" onclick="openOrderModal('1 Short Édu (3€)')">Commander Édu</button>
+            </div>
+
+            <div class="price-card featured">
+              <div class="price-tag">Remise Shorts</div>
+              <div>
+                <h3>Pack 5 Shorts (Édu)</h3>
+                <div class="price-amount">15 € <span>/ 25€</span></div>
+                <ul class="price-features">
+                  <li>5 Shorts / TikToks</li>
+                  <li>3€ au lieu de 5€ / unité</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('Pack 5 Shorts Édu (15€)')">Commander Édu</button>
+            </div>
+
+            <div class="price-card">
+              <div>
+                <h3>1 Vidéo Longue (Édu)</h3>
+                <div class="price-amount">10 € <span>/ 15€</span></div>
+                <ul class="price-features">
+                  <li>Format YouTube / Exposé</li>
+                  <li>Cut & Dérushage propre</li>
+                </ul>
+              </div>
+              <button class="btn btn-secondary" onclick="openOrderModal('1 Vidéo Longue Édu (10€)')">Commander Édu</button>
+            </div>
+
+            <div class="price-card">
+              <div>
+                <h3>Pack 5 Vidéos (Édu)</h3>
+                <div class="price-amount">40 € <span>/ 75€</span></div>
+                <ul class="price-features">
+                  <li>5 Vidéos Longues / Exposés</li>
+                  <li>8€ au lieu de 15€ / unité</li>
+                </ul>
+              </div>
+              <button class="btn btn-secondary" onclick="openOrderModal('Pack 5 Vidéos Édu (40€)')">Commander Édu</button>
+            </div>
+
+            <div class="price-card">
+              <div>
+                <h3>Pass Starter (Édu)</h3>
+                <div class="price-amount">18 € <span>/ mois</span></div>
+                <ul class="price-features">
+                  <li>5 Shorts + 1 Vidéo Longue</li>
+                  <li>Tarif étudiant spécial</li>
+                </ul>
+              </div>
+              <button class="btn btn-secondary" onclick="openOrderModal('Pass Starter Édu (18€)')">Commander Édu</button>
+            </div>
+
+            <div class="price-card featured">
+              <div class="price-tag">Populaire Édu</div>
+              <div>
+                <h3>Pass Pro (Édu)</h3>
+                <div class="price-amount">50 € <span>/ mois</span></div>
+                <ul class="price-features">
+                  <li>15 Shorts + 3 Vidéos Longues</li>
+                  <li>Suivi prioritaire étudiant</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('Pass Pro Édu (50€)')">Commander Édu</button>
+            </div>
+
+            <div class="price-card">
+              <div>
+                <h3>Pass Ultra VIP (Édu)</h3>
+                <div class="price-amount">85 € <span>/ mois</span></div>
+                <ul class="price-features">
+                  <li>25 Shorts + 6 Vidéos Longues</li>
+                  <li>Accompagnement complet</li>
+                </ul>
+              </div>
+              <button class="btn btn-secondary" onclick="openOrderModal('Pass Ultra VIP Édu (85€)')">Commander Édu</button>
+            </div>
+
+            <div class="price-card god-tier">
+              <div class="price-tag god-tag">ÉDU GOD MODE</div>
+              <div>
+                <h3>⚡ Pass Dieu (Édu)</h3>
+                <div class="price-amount" style="color:#f59e0b;">150 € <span>/ 250€</span></div>
+                <ul class="price-features">
+                  <li>40 Shorts + 10 Vidéos YouTube</li>
+                  <li>Retouches illimitées</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" style="background:var(--god-gradient);" onclick="openOrderModal('Pass Dieu Édu GOD MODE (150€)')">Activer Édu GOD MODE</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BUSINESS -->
+        <div id="cat-business" class="cat-content">
+          <div class="pricing-grid">
+            <div class="price-card">
+              <div>
+                <h3>Short Pro / Publicité</h3>
+                <div class="price-amount">15 €</div>
+                <ul class="price-features">
+                  <li>Format vertical 9:16 sponsorisé</li>
+                  <li>Hooks captivants</li>
+                </ul>
+              </div>
+              <button class="btn btn-secondary" onclick="openOrderModal('Short Pro / Publicité (15€)')">Commander</button>
+            </div>
+
+            <div class="price-card featured">
+              <div class="price-tag">Corporate</div>
+              <div>
+                <h3>Vidéo Corporate / Marque</h3>
+                <div class="price-amount">45 €</div>
+                <ul class="price-features">
+                  <li>Présentation entreprise / produit</li>
+                  <li>Habillage graphique pro</li>
+                </ul>
+              </div>
+              <button class="btn btn-primary" onclick="openOrderModal('Vidéo Corporate / Marque (45€)')">Commander</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PATCH NOTES -->
+    <div id="page-patchnotes" class="page-section">
+      <section style="max-width: 800px;">
+        <h2>📋 Historique des Mises à Jour (Patch Notes)</h2>
+        
+        <div class="patchnote-card">
+          <h3 style="color: var(--accent-color);">Version Actuelle — Formules Complètes & Passes</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem;">Mise à jour récente</p>
+          <ul style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;">
+            <li>Ajout de l'ensemble des formules Particuliers, Étudiants et Business dans le catalogue et le formulaire de commande.</li>
+            <li>Calculateur de devis interactif mis à jour.</li>
+            <li>Système de paiement sécurisé Revolut actif.</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- ESPACE CLIENT -->
+    <div id="page-account" class="page-section">
+      <section>
+        <div id="authContainer" class="auth-box">
+          <h3 id="authTitle" style="text-align:center; margin-bottom:1.5rem;">Connexion Espace Client</h3>
+          
+          <div class="form-group">
+            <label>Adresse E-mail</label>
+            <input type="email" id="authEmail" placeholder="votre@email.com">
+          </div>
+          <div class="form-group">
+            <label>Mot de passe</label>
+            <input type="password" id="authPassword" placeholder="••••••••">
+          </div>
+
+          <div id="registerFields" style="display:none;">
+            <div class="form-group">
+              <label>Nom ou Pseudo Discord</label>
+              <input type="text" id="authName" placeholder="Ex: OverkoroFan#1234">
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%; margin-top:1rem;" id="authSubmitBtn" onclick="handleAuth()">Se connecter</button>
+          
+          <p style="text-align:center; margin-top:1.2rem; color:var(--text-muted); font-size:0.9rem;">
+            <span id="authToggleText">Pas encore de compte ?</span>
+            <a href="#" onclick="toggleAuthMode(event)" id="authToggleLink" style="color:var(--accent-color);">Créer un compte</a>
+          </p>
+        </div>
+
+        <div id="dashboardContainer" class="dashboard-box" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid var(--border-color); padding-bottom:1rem;">
+            <div>
+              <h3>Bienvenue, <span id="clientDisplayName" style="color:var(--accent-color);"></span></h3>
+              <p style="color:var(--text-muted); font-size:0.85rem;" id="clientDisplayEmail"></p>
+            </div>
+            <button class="btn btn-secondary" onclick="logoutClient()">Déconnexion</button>
+          </div>
+
+          <div id="clientPassBanner" style="background:rgba(99,102,241,0.1); border:1px solid var(--accent-color); border-radius:10px; padding:1rem; margin-bottom:1.5rem; display:none;">
+            <p style="font-size:0.9rem;">⭐ Pass / Abonnement Actif : <strong id="clientActivePassName" style="color:var(--accent-color);">Aucun</strong></p>
+          </div>
+
+          <div class="payment-links-box">
+            <h4 style="margin-bottom:0.8rem;">💳 Effectuer un Paiement Sécurisé</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.2rem;">Réglez votre commande au montant exact via notre lien officiel :</p>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+              <a href="https://revolut.me/mathie_fg_btpf" target="_blank" class="payment-btn-revolut">
+                💳 Payer par Carte (Revolut - Tous réseaux acceptés)
+              </a>
+              <div class="payment-btn-paypal-soon">
+                🅿️ PayPal arrive bientôt
+              </div>
+            </div>
+          </div>
+
+          <div style="background:var(--card-bg-hover); padding:1.5rem; border-radius:12px; margin-bottom:2rem;">
+            <h4 style="margin-bottom:1rem;">📦 Passer une nouvelle commande</h4>
+            <div class="form-group">
+              <label>Formule / Pass choisi</label>
+              <select id="newOrderPlan" onchange="checkIfEduOrder()">
+                <option value="1 Short / TikTok (5€)">1 Short / TikTok (5€)</option>
+                <option value="Pack 5 Shorts (20€)">Pack 5 Shorts (20€)</option>
+                <option value="1 Vidéo Longue (15€)">1 Vidéo Longue (15€)</option>
+                <option value="Pack 5 Vidéos Longues (65€)">Pack 5 Vidéos Longues (65€)</option>
+                <option value="Pass Starter (30€)">Pass Starter (30€)</option>
+                <option value="Pass Pro (80€)">Pass Pro (80€)</option>
+                <option value="Pass Ultra VIP (140€)">Pass Ultra VIP (140€)</option>
+                <option value="Pass Dieu GOD MODE (250€)">Pass Dieu GOD MODE (250€)</option>
+                <option value="1 Short Édu (3€)">1 Short Édu (3€)</option>
+                <option value="Pack 5 Shorts Édu (15€)">Pack 5 Shorts Édu (15€)</option>
+                <option value="1 Vidéo Longue Édu (10€)">1 Vidéo Longue Édu (10€)</option>
+                <option value="Pack 5 Vidéos Édu (40€)">Pack 5 Vidéos Édu (40€)</option>
+                <option value="Pass Starter Édu (18€)">Pass Starter Édu (18€)</option>
+                <option value="Pass Pro Édu (50€)">Pass Pro Édu (50€)</option>
+                <option value="Pass Ultra VIP Édu (85€)">Pass Ultra VIP Édu (85€)</option>
+                <option value="Pass Dieu Édu GOD MODE (150€)">Pass Dieu Édu GOD MODE (150€)</option>
+                <option value="Short Pro / Publicité (15€)">Short Pro / Publicité (15€)</option>
+                <option value="Vidéo Corporate / Marque (45€)">Vidéo Corporate / Marque (45€)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Lien des Rushes (Google Drive, WeTransfer...)</label>
+              <input type="url" id="newOrderLink" placeholder="https://drive.google.com/...">
+            </div>
+
+            <div class="form-group">
+              <label>Code Promo (Optionnel)</label>
+              <input type="text" id="promoCodeInput" placeholder="Ex: FIRST10 ou OVERKORO">
+            </div>
+
+            <div class="form-group" id="eduFileGroup" style="display:none; background:rgba(99,102,241,0.05); border:1px dashed var(--accent-color); padding:1rem; border-radius:8px;">
+              <label style="color:var(--accent-color);">🎓 Lien du Justificatif Scolaire (Google Drive, Imgur, etc.)</label>
+              <input type="url" id="eduFileInput" placeholder="https://..." style="margin-top:0.4rem;">
+            </div>
+
+            <button class="btn btn-primary" onclick="submitClientOrder()">Valider la commande</button>
+          </div>
+
+          <h4>📋 Suivi de vos projets & Échanges en direct</h4>
+          <div id="clientOrdersList" style="margin-top:1rem;"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 Overkoro — Tous droits réservés.</p>
+  </footer>
+
+  <script>
+    let isRegisterMode = false;
+    let currentUser = JSON.parse(localStorage.getItem('overkoro_current_user')) || null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('overkoro_theme') || 'default';
+      const savedMode = localStorage.getItem('overkoro_lightmode') || 'false';
+      if (savedMode === 'true') {
+        document.body.classList.add('light-mode');
+        document.getElementById('lightModeBtn').innerText = "☀️ Clair";
+      }
+      if (savedTheme !== 'default') {
+        document.body.classList.add('theme-' + savedTheme);
+        document.getElementById('themeSelector').value = savedTheme;
+      }
+      checkForUnreadAdminMessages();
+    });
+
+    function toggleLightMode() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      document.getElementById('lightModeBtn').innerText = isLight ? "☀️ Clair" : "🌙 Sombre";
+      localStorage.setItem('overkoro_lightmode', isLight);
+    }
+
+    function changeTheme(theme) {
+      document.body.className = document.body.classList.contains('light-mode') ? 'light-mode' : '';
+      if (theme !== 'default') document.body.classList.add('theme-' + theme);
+      localStorage.setItem('overkoro_theme', theme);
+    }
+
+    function switchPage(pageId) {
+      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('page-' + pageId).classList.add('active');
+      if (pageId === 'account') updateDashboardUI();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchCategory(catId) {
+      document.querySelectorAll('.cat-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('cat-' + catId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function calculateDevis() {
+      const shorts = parseInt(document.getElementById('calcShorts').value) || 0;
+      const longs = parseInt(document.getElementById('calcLongs').value) || 0;
+      const miniature = document.getElementById('calcMiniature').checked;
+      const isEdu = document.getElementById('calcEdu').checked;
+
+      let total = (shorts * 5) + (longs * 15);
+      if (miniature) total += 4;
+      if (isEdu) total = total * 0.6;
+
+      document.getElementById('calcTotal').innerText = total.toFixed(2) + ' €';
+    }
+
+    function checkIfEduOrder() {
+      const plan = document.getElementById('newOrderPlan').value;
+      const eduGroup = document.getElementById('eduFileGroup');
+      if (plan.includes('Édu') || plan.includes('Édu GOD MODE')) {
+        eduGroup.style.display = 'block';
+      } else {
+        eduGroup.style.display = 'none';
+      }
+    }
+
+    function toggleAuthMode(e) {
+      e.preventDefault();
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('authTitle').innerText = isRegisterMode ? "Création de compte Client" : "Connexion Espace Client";
+      document.getElementById('registerFields').style.display = isRegisterMode ? "block" : "none";
+      document.getElementById('authSubmitBtn').innerText = isRegisterMode ? "S'inscrire" : "Se connecter";
+      document.getElementById('authToggleText').innerText = isRegisterMode ? "Déjà un compte ?" : "Pas encore de compte ?";
+      document.getElementById('authToggleLink').innerText = isRegisterMode ? "Se connecter" : "Créer un compte";
+    }
+
+    function handleAuth() {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+      let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+
+      if (!email || !password) return alert("Veuillez remplir tous les champs !");
+
+      if (isRegisterMode) {
+        const name = document.getElementById('authName').value.trim() || email.split('@')[0];
+        if (users.find(u => u.email === email)) return alert("Cet e-mail est déjà associé à un compte !");
+
+        const newUser = { id: Date.now(), email, password, name, activePass: '' };
+        users.push(newUser);
+        localStorage.setItem('overkoro_users_db', JSON.stringify(users));
+        currentUser = newUser;
+        localStorage.setItem('overkoro_current_user', JSON.stringify(currentUser));
+        alert("Compte créé avec succès !");
+      } else {
+        const user = users.find(u => u.email === email && u.password === password);
+        if (!user) return alert("E-mail ou mot de passe incorrect !");
+        currentUser = user;
+        localStorage.setItem('overkoro_current_user', JSON.stringify(currentUser));
+      }
+      updateDashboardUI();
+    }
+
+    function logoutClient() {
+      currentUser = null;
+      localStorage.removeItem('overkoro_current_user');
+      updateDashboardUI();
+    }
+
+    function updateDashboardUI() {
+      if (currentUser) {
+        let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+        let freshUser = users.find(u => u.email === currentUser.email);
+        if (freshUser) currentUser = freshUser;
+
+        document.getElementById('authContainer').style.display = "none";
+        document.getElementById('dashboardContainer').style.display = "block";
+        document.getElementById('clientDisplayName').innerText = currentUser.name;
+        document.getElementById('clientDisplayEmail').innerText = currentUser.email;
+
+        const passBanner = document.getElementById('clientPassBanner');
+        if (currentUser.activePass) {
+          passBanner.style.display = "block";
+          document.getElementById('clientActivePassName').innerText = currentUser.activePass;
+        } else {
+          passBanner.style.display = "none";
+        }
+
+        checkIfEduOrder();
+        loadClientOrders();
+      } else {
+        document.getElementById('authContainer').style.display = "block";
+        document.getElementById('dashboardContainer').style.display = "none";
+      }
+    }
+
+    function openOrderModal(planName) {
+      if (!currentUser) {
+        alert("Veuillez vous connecter à votre Espace Client pour passer commande.");
+        switchPage('account');
+        return;
+      }
+      switchPage('account');
+      const select = document.getElementById('newOrderPlan');
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === planName) {
+          select.selectedIndex = i;
+          break;
+        }
+      }
+      checkIfEduOrder();
+    }
+
+    function submitClientOrder() {
+      if (!currentUser) return;
+      const plan = document.getElementById('newOrderPlan').value;
+      const link = document.getElementById('newOrderLink').value.trim();
+      const promo = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+      const isEdu = plan.includes('Édu') || plan.includes('Édu GOD MODE');
+      const eduFileInput = document.getElementById('eduFileInput');
+      const eduFileLink = eduFileInput ? eduFileInput.value.trim() : '';
+
+      if (isEdu && !eduFileLink) {
+        return alert("Veuillez indiquer un lien vers votre justificatif scolaire pour bénéficier du tarif Édu !");
+      }
+
+      let discountMsg = "";
+      if (promo === "FIRST10") discountMsg = " (Code promo FIRST10 appliqué : -10%)";
+      if (promo === "OVERKORO") discountMsg = " (Code promo OVERKORO appliqué : -20%)";
+
+      const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const newOrder = {
+        id: 'ORD-' + Math.floor(1000 + Math.random() * 9000),
+        userEmail: currentUser.email,
+        userName: currentUser.name,
+        plan: plan + discountMsg,
+        link: link || 'Non fourni',
+        deliveryLink: '',
+        status: isEdu ? 'En-attente-justificatif' : 'Reçue',
+        paymentStatus: 'Non réglé',
+        internalNote: '',
+        date: new Date().toLocaleDateString('fr-FR'),
+        revisionsLeft: plan.includes('GOD') || plan.includes('Ultra VIP') ? 'Illimités' : 2,
+        eduFile: isEdu ? eduFileLink : null,
+        messages: [{ 
+          sender: 'Overkoro', 
+          text: isEdu ? 'Lien du justificatif scolaire reçu ! En attente de validation par l\'administrateur.' : 'Commande bien reçue ! Pensez à effectuer le règlement via Revolut.', 
+          time: 'À l\'instant' 
+        }]
+      };
+
+      orders.push(newOrder);
+      localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+      alert(isEdu ? "Commande Édu transmise ! En attente de validation." : "Commande validée et transmise !");
+      document.getElementById('newOrderLink').value = '';
+      document.getElementById('promoCodeInput').value = '';
+      if (eduFileInput) eduFileInput.value = '';
+      loadClientOrders();
+    }
+
+    function loadClientOrders() {
+      const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const myOrders = orders.filter(o => o.userEmail === currentUser.email);
+      const container = document.getElementById('clientOrdersList');
+
+      if (myOrders.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Aucune commande active pour le moment.</p>`;
+        return;
+      }
+
+      container.innerHTML = myOrders.map(o => `
+        <div class="order-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${o.id} — ${o.plan}</strong>
+            <span class="status-badge status-${o.status}">${o.status.replace(/-/g, ' ')}</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.4rem;">
+            Date : ${o.date} | Statut Paiement : <strong style="color:${o.paymentStatus === 'Payé' ? 'var(--success-color)' : 'var(--warning-color)'};">${o.paymentStatus}</strong>
+            ${o.paymentStatus !== 'Payé' ? `<button class="btn btn-secondary" style="font-size:0.75rem; padding:0.2rem 0.5rem; margin-left:0.5rem;" onclick="markOrderPaid('${o.id}')">J'ai payé (Notifier Admin)</button>` : ''}
+          </p>
+
+          ${o.status === 'Refusée' ? `
+            <div style="margin-top:0.8rem; background:rgba(239,68,68,0.1); border:1px solid var(--danger-color); padding:0.8rem; border-radius:6px; color:var(--danger-color); font-size:0.85rem;">
+              ❌ Votre justificatif scolaire a été refusé par l'administrateur.
+            </div>
+          ` : ''}
+
+          ${o.deliveryLink ? `
+            <div style="margin-top:0.8rem; border-top:1px dashed var(--border-color); padding-top:0.6rem;">
+              <span style="font-size:0.85rem; color:var(--success-color); font-weight:bold;">🎉 Votre vidéo est prête !</span><br>
+              <div style="display:flex; gap:0.5rem; margin-top:0.4rem; flex-wrap:wrap;">
+                <a href="${o.deliveryLink}" target="_blank" class="btn btn-download">📥 Télécharger la vidéo terminée</a>
+                <button class="btn btn-secondary" style="font-size:0.8rem;" onclick="requestRevision('${o.id}')">✏️ Demander une retouche</button>
+                <button class="btn btn-secondary" style="font-size:0.8rem;" onclick="printInvoice('${o.id}')">📄 Facture PDF</button>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="chat-box">
+            ${(o.messages || []).map(m => `
+              <div class="msg ${m.sender === currentUser.name ? 'client' : 'admin'}">
+                <strong>${m.sender}:</strong> ${m.text}
+              </div>
+            `).join('')}
+          </div>
+          <div style="display:flex; gap:0.4rem; margin-top:0.5rem;">
+            <input type="text" id="chatInput-${o.id}" placeholder="Écrire une consigne ou remarque..." style="padding:0.4rem; font-size:0.85rem;">
+            <button class="btn btn-primary" style="padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="sendClientMessage('${o.id}')">Envoyer</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function markOrderPaid(orderId) {
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.paymentStatus = 'Payé / En attente de vérif';
+        if (!order.messages) order.messages = [];
+        order.messages.push({
+          sender: currentUser.name,
+          text: '💳 J\'ai effectué le paiement via Revolut ! En attente de validation.',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        alert("Notification de paiement envoyée à l'administrateur !");
+        loadClientOrders();
+      }
+    }
+
+    function sendClientMessage(orderId) {
+      const input = document.getElementById('chatInput-' + orderId);
+      const text = input.value.trim();
+      if (!text) return;
+
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        if (!order.messages) order.messages = [];
+        order.messages.push({
+          sender: currentUser.name,
+          text: text,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        input.value = '';
+        loadClientOrders();
+      }
+    }
+
+    function requestRevision(orderId) {
+      const notes = prompt("Décrivez précisément les retouches souhaitées :");
+      if (!notes) return;
+
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = 'En-cours';
+        if (!order.messages) order.messages = [];
+        order.messages.push({
+          sender: currentUser.name,
+          text: `✏️ DEMANDE DE RETOUCHE : ${notes}`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        alert("Demande de retouche transmise !");
+        loadClientOrders();
+      }
+    }
+
+    function printInvoice(orderId) {
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html>
+        <head><title>Facture ${order.id}</title></head>
+        <body style="font-family:sans-serif; padding:2rem;">
+          <h2>OVERKORO MONTAGE — FACTURE N° ${order.id}</h2>
+          <p><strong>Client :</strong> ${order.userName} (${order.userEmail})</p>
+          <p><strong>Prestation :</strong> ${order.plan}</p>
+          <p><strong>Date :</strong> ${order.date}</p>
+          <hr style="margin:2rem 0;">
+          <h3>Statut : Réglé et Validé</h3>
+          <script>window.print();<\/script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    function checkForUnreadAdminMessages() {
+      const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      if (!currentUser) return;
+      const myOrders = orders.filter(o => o.userEmail === currentUser.email);
+      let hasAdminMsg = myOrders.some(o => o.messages && o.messages.length > 0 && o.messages[o.messages.length - 1].sender.includes('Admin'));
+      if (hasAdminMsg) {
+        document.getElementById('pageTitle').innerText = "🔴 Nouveau message ! — Overkoro";
+      }
+    }
+
+    if (currentUser) updateDashboardUI();
+  </script>
+</body>
+</html>

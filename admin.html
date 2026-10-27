@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="adminTitle">Overkoro — Panel Administration Pro</title>
+  <style>
+    :root {
+      --bg-color: #0d0f12;
+      --card-bg: #161920;
+      --accent-color: #6366f1;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #262b36;
+      --success-color: #22c55e;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); padding: 2.5rem 5%; }
+
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+    }
+
+    .badge-admin {
+      background: rgba(239, 68, 68, 0.2); color: var(--danger-color);
+      border: 1px solid var(--danger-color); padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; font-size: 0.85rem;
+    }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.9rem; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; vertical-align: top; }
+    th { color: var(--text-muted); font-weight: 600; }
+
+    select, input[type="text"], input[type="url"], button {
+      padding: 0.4rem 0.7rem; border-radius: 6px; border: 1px solid var(--border-color);
+      background: var(--bg-color); color: #fff; font-size: 0.85rem; cursor: pointer;
+    }
+
+    input[type="url"], input[type="text"] { width: 150px; cursor: text; }
+    .btn-danger { background: var(--danger-color); border: none; font-weight: 600; color: #fff; }
+    .btn-save { background: var(--success-color); border: none; font-weight: 600; color: #fff; margin-left: 0.3rem; }
+    .btn-refresh { background: var(--accent-color); border: none; font-weight: 600; padding: 0.6rem 1.2rem; border-radius: 6px; color: #fff; }
+    .btn-validate { background: var(--success-color); border: none; font-weight: 600; color: #fff; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+    .btn-reject { background: var(--danger-color); border: none; font-weight: 600; color: #fff; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>Panel Administration Overkoro</h1>
+      <p style="color:var(--text-muted);">Suivi des commandes, validation des paiements et gestion des codes promo.</p>
+    </div>
+    <div style="display:flex; gap:1rem; align-items:center;">
+      <button class="btn-refresh" onclick="loadAdminData()">🔄 Actualiser</button>
+      <span class="badge-admin">🔑 ACCÈS ADMIN SÉCURISÉ</span>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <div class="grid">
+    <div class="card">
+      <h4 style="color:var(--text-muted);">Clients Inscrits</h4>
+      <p id="statUsers" style="font-size:2rem; font-weight:800; color:var(--accent-color); margin-top:0.4rem;">0</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--text-muted);">Commandes Totales</h4>
+      <p id="statOrders" style="font-size:2rem; font-weight:800; color:var(--warning-color); margin-top:0.4rem;">0</p>
+    </div>
+    <div class="card">
+      <h4 style="color:var(--text-muted);">Chiffre d'Affaires</h4>
+      <p id="statRevenue" style="font-size:2rem; font-weight:800; color:var(--success-color); margin-top:0.4rem;">0 €</p>
+    </div>
+  </div>
+
+  <!-- COMMANDES -->
+  <div class="card" style="margin-bottom:2rem; overflow-x:auto;">
+    <h3>📦 Gestion des Commandes & Paiements</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID & Client</th>
+          <th>Formule</th>
+          <th>Paiement</th>
+          <th>Justificatif / Rushes</th>
+          <th>Statut</th>
+          <th>Lien Livraison (Vidéo)</th>
+          <th>Notes Internes & Chat</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="adminOrdersTable">
+        <!-- JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GESTION CODES PROMO -->
+  <div class="card" style="margin-bottom:2rem;">
+    <h3>🏷️ Gestion des Codes Promo</h3>
+    <div style="display:flex; gap:0.5rem; margin-top:1rem; margin-bottom:1rem; flex-wrap:wrap;">
+      <input type="text" id="newPromoCode" placeholder="Code (ex: ETE2026)" style="width:180px;">
+      <input type="text" id="newPromoDiscount" placeholder="Remise (ex: 15% ou 10€)" style="width:180px;">
+      <button class="btn-save" onclick="createPromoCode()">➕ Ajouter le code promo</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Code Promo</th>
+          <th>Réduction</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="adminPromosTable">
+        <!-- JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CLIENTS & PASSES -->
+  <div class="card" style="overflow-x:auto;">
+    <h3>👥 Gestion des Comptes & Passes Actifs</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>#ID</th>
+          <th>Nom / Pseudo</th>
+          <th>E-mail</th>
+          <th>Pass Actif</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="adminUsersTable">
+        <!-- JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function loadAdminData() {
+      const users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+      const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      let promos = JSON.parse(localStorage.getItem('overkoro_promos_db')) || [
+        { code: 'FIRST10', discount: '10%' },
+        { code: 'OVERKORO', discount: '20%' }
+      ];
+
+      document.getElementById('statUsers').innerText = users.length;
+      document.getElementById('statOrders').innerText = orders.length;
+
+      let rev = orders.reduce((acc, o) => {
+        if (o.paymentStatus === 'Payé' || o.status === 'Terminée') {
+          if (o.plan.includes('250€') || o.plan.includes('GOD')) return acc + 250;
+          if (o.plan.includes('150€')) return acc + 150;
+          if (o.plan.includes('140€')) return acc + 140;
+          if (o.plan.includes('85€')) return acc + 85;
+          if (o.plan.includes('80€')) return acc + 80;
+          if (o.plan.includes('65€')) return acc + 65;
+          if (o.plan.includes('50€')) return acc + 50;
+          if (o.plan.includes('45€')) return acc + 45;
+          if (o.plan.includes('40€')) return acc + 40;
+          if (o.plan.includes('30€')) return acc + 30;
+          if (o.plan.includes('20€')) return acc + 20;
+          if (o.plan.includes('18€')) return acc + 18;
+          if (o.plan.includes('15€')) return acc + 15;
+          if (o.plan.includes('10€')) return acc + 10;
+          if (o.plan.includes('5€')) return acc + 5;
+          if (o.plan.includes('3€')) return acc + 3;
+        }
+        return acc;
+      }, 0);
+      document.getElementById('statRevenue').innerText = rev + ' €';
+
+      let pendingCount = orders.filter(o => o.status === 'Reçue' || o.status === 'En-attente-justificatif').length;
+      if (pendingCount > 0) {
+        document.getElementById('adminTitle').innerText = `🔴 (${pendingCount}) Commandes en attente — Overkoro Admin`;
+      }
+
+      // Orders Table
+      const ordersTable = document.getElementById('adminOrdersTable');
+      if (orders.length === 0) {
+        ordersTable.innerHTML = `<tr><td colspan="8" style="color:var(--text-muted);">Aucune commande enregistrée.</td></tr>`;
+      } else {
+        ordersTable.innerHTML = orders.map(o => {
+          const isEdu = o.plan.includes('Édu') || o.plan.includes('Édu GOD MODE');
+          return `
+            <tr>
+              <td><strong>${o.id}</strong><br>${o.userName}<br><small style="color:var(--text-muted);">${o.userEmail}</small></td>
+              <td><strong>${o.plan}</strong></td>
+              <td>
+                <span style="color:${o.paymentStatus === 'Payé' ? 'var(--success-color)' : 'var(--warning-color)'}; font-weight:bold; font-size:0.85rem;">${o.paymentStatus || 'Non réglé'}</span><br>
+                ${o.paymentStatus !== 'Payé' ? `<button class="btn-validate" style="margin-top:0.3rem; font-size:0.7rem;" onclick="adminMarkPaid('${o.id}')">Valider Paiement</button>` : ''}
+              </td>
+              <td>
+                <a href="${o.link}" target="_blank" style="color:var(--accent-color); font-size:0.85rem;">🔗 Rushes</a><br>
+                ${isEdu && o.eduFile ? `<a href="${o.eduFile}" target="_blank" style="color:var(--warning-color); font-weight:bold; font-size:0.85rem;">📎 Justificatif</a>` : ''}
+              </td>
+              <td>
+                ${isEdu && o.status === 'En-attente-justificatif' ? `
+                  <div style="display:flex; gap:0.3rem; flex-direction:column;">
+                    <span style="color:var(--warning-color); font-size:0.8rem; font-weight:bold;">En attente de justif</span>
+                    <div style="display:flex; gap:0.2rem; margin-top:0.2rem;">
+                      <button class="btn-validate" onclick="validateEduOrder('${o.id}', true)">✅ Valider</button>
+                      <button class="btn-reject" onclick="validateEduOrder('${o.id}', false)">❌ Refuser</button>
+                    </div>
+                  </div>
+                ` : `
+                  <select onchange="updateOrderStatus('${o.id}', this.value)">
+                    <option value="Reçue" ${o.status === 'Reçue' ? 'selected' : ''}>Reçue</option>
+                    <option value="En-cours" ${o.status === 'En-cours' ? 'selected' : ''}>En cours</option>
+                    <option value="Terminée" ${o.status === 'Terminée' ? 'selected' : ''}>Terminée</option>
+                    <option value="Refusée" ${o.status === 'Refusée' ? 'selected' : ''}>Refusée</option>
+                  </select>
+                `}
+              </td>
+              <td>
+                <input type="url" id="deliveryInput-${o.id}" value="${o.deliveryLink || ''}" placeholder="https://drive.google.com/...">
+                <button class="btn-save" onclick="saveDeliveryLink('${o.id}')">💾 OK</button>
+              </td>
+              <td>
+                <div style="margin-bottom:0.5rem;">
+                  <input type="text" id="internalNote-${o.id}" value="${o.internalNote || ''}" placeholder="Note interne..." onchange="saveInternalNote('${o.id}', this.value)" style="width:100%; font-size:0.75rem; background:#111;">
+                </div>
+                <div style="background:var(--bg-color); border:1px solid var(--border-color); padding:0.4rem; max-height:80px; overflow-y:auto; font-size:0.75rem; border-radius:4px;">
+                  ${(o.messages || []).map(m => `<div><strong>${m.sender}:</strong> ${m.text}</div>`).join('')}
+                </div>
+                <div style="display:flex; gap:0.3rem; margin-top:0.3rem;">
+                  <input type="text" id="adminMsgInput-${o.id}" placeholder="Répondre..." style="width:90px;">
+                  <button class="btn-save" onclick="sendAdminMessage('${o.id}')">💬</button>
+                </div>
+              </td>
+              <td>
+                <button class="btn-danger" onclick="deleteOrder('${o.id}')">X</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Promos Table
+      const promosTable = document.getElementById('adminPromosTable');
+      if (promos.length === 0) {
+        promosTable.innerHTML = `<tr><td colspan="3" style="color:var(--text-muted);">Aucun code promo actif.</td></tr>`;
+      } else {
+        promosTable.innerHTML = promos.map((p, idx) => `
+          <tr>
+            <td><strong>${p.code}</strong></td>
+            <td>${p.discount}</td>
+            <td><button class="btn-danger" onclick="deletePromoCode(${idx})">❌ Supprimer</button></td>
+          </tr>
+        `).join('');
+      }
+
+      // Users Table
+      const usersTable = document.getElementById('adminUsersTable');
+      if (users.length === 0) {
+        usersTable.innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);">Aucun client inscrit.</td></tr>`;
+      } else {
+        usersTable.innerHTML = users.map(u => {
+          const hasPass = u.activePass && u.activePass.trim() !== '';
+          return `
+            <tr>
+              <td>#${u.id}</td>
+              <td><strong>${u.name}</strong></td>
+              <td>${u.email}</td>
+              <td><span style="color:var(--warning-color); font-weight:bold;">${hasPass ? u.activePass : 'Aucun pass'}</span></td>
+              <td>
+                ${hasPass ? `<button class="btn-danger" onclick="removeUserPass('${u.email}')">❌ Retirer</button>` : `<span style="color:var(--text-muted); font-size:0.85rem;">Aucun</span>`}
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    function createPromoCode() {
+      const code = document.getElementById('newPromoCode').value.trim().toUpperCase();
+      const discount = document.getElementById('newPromoDiscount').value.trim();
+      if (!code || !discount) return alert("Remplissez tous les champs du code promo !");
+
+      let promos = JSON.parse(localStorage.getItem('overkoro_promos_db')) || [
+        { code: 'FIRST10', discount: '10%' },
+        { code: 'OVERKORO', discount: '20%' }
+      ];
+
+      promos.push({ code, discount });
+      localStorage.setItem('overkoro_promos_db', JSON.stringify(promos));
+      document.getElementById('newPromoCode').value = '';
+      document.getElementById('newPromoDiscount').value = '';
+      alert("Code promo créé avec succès !");
+      loadAdminData();
+    }
+
+    function deletePromoCode(index) {
+      let promos = JSON.parse(localStorage.getItem('overkoro_promos_db')) || [];
+      promos.splice(index, 1);
+      localStorage.setItem('overkoro_promos_db', JSON.stringify(promos));
+      loadAdminData();
+    }
+
+    function adminMarkPaid(orderId) {
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.paymentStatus = 'Payé';
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        loadAdminData();
+      }
+    }
+
+    function saveInternalNote(orderId, noteText) {
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.internalNote = noteText;
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+      }
+    }
+
+    function validateEduOrder(orderId, isValid) {
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        if (isValid) {
+          order.status = 'En-cours';
+          if (!order.messages) order.messages = [];
+          order.messages.push({
+            sender: 'Overkoro (Admin)',
+            text: '✅ Justificatif validé ! Le montage commence.',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          });
+          if (order.plan.includes('Pass') || order.plan.includes('GOD MODE')) {
+            activateUserPass(order.userEmail, order.plan);
+          }
+        } else {
+          order.status = 'Refusée';
+          if (!order.messages) order.messages = [];
+          order.messages.push({
+            sender: 'Overkoro (Admin)',
+            text: '❌ Justificatif refusé.',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          });
+        }
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        loadAdminData();
+      }
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = newStatus;
+        if (newStatus === 'Terminée' && (order.plan.includes('Pass') || order.plan.includes('GOD MODE'))) {
+          activateUserPass(order.userEmail, order.plan);
+        }
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        loadAdminData();
+      }
+    }
+
+    function saveDeliveryLink(orderId) {
+      const linkInput = document.getElementById('deliveryInput-' + orderId).value.trim();
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.deliveryLink = linkInput;
+        if (linkInput && order.status !== 'Terminée') {
+          order.status = 'Terminée';
+        }
+        if (order.plan.includes('Pass') || order.plan.includes('GOD MODE')) {
+          activateUserPass(order.userEmail, order.plan);
+        }
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        alert("Lien sauvegardé et pass activé !");
+        loadAdminData();
+      }
+    }
+
+    function activateUserPass(email, planName) {
+      let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+      const user = users.find(u => u.email === email);
+      if (user) {
+        user.activePass = planName;
+        localStorage.setItem('overkoro_users_db', JSON.stringify(users));
+        let currentUser = JSON.parse(localStorage.getItem('overkoro_current_user'));
+        if (currentUser && currentUser.email === email) {
+          currentUser.activePass = planName;
+          localStorage.setItem('overkoro_current_user', JSON.stringify(currentUser));
+        }
+      }
+    }
+
+    function sendAdminMessage(orderId) {
+      const input = document.getElementById('adminMsgInput-' + orderId);
+      const text = input.value.trim();
+      if (!text) return;
+
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        if (!order.messages) order.messages = [];
+        order.messages.push({
+          sender: 'Overkoro (Admin)',
+          text: text,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        input.value = '';
+        loadAdminData();
+      }
+    }
+
+    function removeUserPass(email) {
+      if (confirm("Retirer le pass de cet utilisateur ?")) {
+        let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+        const user = users.find(u => u.email === email);
+        if (user) {
+          user.activePass = '';
+          localStorage.setItem('overkoro_users_db', JSON.stringify(users));
+          let currentUser = JSON.parse(localStorage.getItem('overkoro_current_user'));
+          if (currentUser && currentUser.email === email) {
+            currentUser.activePass = '';
+            localStorage.setItem('overkoro_current_user', JSON.stringify(currentUser));
+          }
+          loadAdminData();
+        }
+      }
+    }
+
+    function deleteOrder(orderId) {
+      if (confirm("Supprimer cette commande ?")) {
+        let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+        orders = orders.filter(o => o.id !== orderId);
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        loadAdminData();
+      }
+    }
+
+    loadAdminData();
+  </script>
+</body>
+</html>
