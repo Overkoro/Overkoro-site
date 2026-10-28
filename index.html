@@ -138,7 +138,6 @@
     .msg.client { background: rgba(99,102,241,0.2); color: var(--text-main); margin-left: auto; text-align: right; }
     .msg.admin { background: rgba(34,197,94,0.2); color: var(--text-main); }
 
-    /* Style Option 3 : Simulateur Visuel */
     .calc-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; max-width: 850px; margin: 2rem auto; }
     .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
     .calc-option-card {
@@ -163,7 +162,6 @@
   <header>
     <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;">
       <div class="logo">OVERKORO<span>.</span></div>
-      <!-- Option 4 : Badge de disponibilité en direct -->
       <div id="headerAvailability" class="availability-badge">🟢 Créneaux disponibles</div>
     </div>
     <nav>
@@ -199,7 +197,7 @@
       </section>
     </div>
 
-    <!-- CALCULATEUR (OPTION 3 : Typeur de projet visuel) -->
+    <!-- CALCULATEUR -->
     <div id="page-calculator" class="page-section">
       <section>
         <h2>🎛️ Simulateur de Devis Interactif</h2>
@@ -231,19 +229,19 @@
             <p style="font-size:0.9rem; color:var(--text-muted);">Estimation instantanée du projet :</p>
             <h3 id="calcTotal" style="font-size:2.8rem; color:var(--accent-color); margin:0.4rem 0;">5.00 €</h3>
             <p id="calcDelay" style="font-size:0.85rem; color:var(--text-muted);">Délai de livraison estimé : 24 à 48h</p>
-            <button class="btn btn-primary" style="margin-top:1rem;" onclick="orderFromCalculator()">commander cette configuration</button>
+            <button class="btn btn-primary" style="margin-top:1rem;" onclick="orderFromCalculator()">Commander cette configuration</button>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- FORMULES -->
+    <!-- FORMULES DYNAMIQUES -->
     <div id="page-offres" class="page-section">
       <section>
         <h2>Toutes les Formules & Passes</h2>
         
         <div class="payment-policy-notice">
-          <p>⚠️ <strong>Règle importante :</strong> Les paiements doivent impérativement être effectués avant l'envoi du lien de téléchargement final. Aucun fichier ne sera transmis sans règlement préalable.</p>
+          <p>⚠️ <strong>Règle importante :</strong> Les paiements doivent impérativement être effectués avant l'envoi du lien de téléchargement final. Aucun fichier ne sera transmitted sans règlement préalable.</p>
         </div>
 
         <div class="cat-tabs">
@@ -252,247 +250,20 @@
           <button class="cat-btn" onclick="switchCategory('business')">💼 Business & Entreprises</button>
         </div>
 
-        <!-- PARTICULIERS -->
         <div id="cat-particuliers" class="cat-content active">
           <h3>Prestations Unitaires & Passes</h3>
-          <div class="pricing-grid">
-            <div class="price-card">
-              <div>
-                <h3>1 Short / TikTok</h3>
-                <div class="price-amount">5 €</div>
-                <ul class="price-features">
-                  <li>Durée jusqu'à 60s</li>
-                  <li>Sous-titres animés & Zooms</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('1 Short / TikTok (5€)')">Commander</button>
-            </div>
-
-            <div class="price-card featured">
-              <div class="price-tag">1 Short Offert</div>
-              <div>
-                <h3>Pack 5 Shorts</h3>
-                <div class="price-amount">20 € <span>/ 25€</span></div>
-                <ul class="price-features">
-                  <li>5 Shorts / TikToks</li>
-                  <li>4€ au lieu de 5€ / unité</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('Pack 5 Shorts (20€)')">Commander</button>
-            </div>
-
-            <div class="price-card">
-              <div>
-                <h3>1 Vidéo Longue</h3>
-                <div class="price-amount">15 €</div>
-                <ul class="price-features">
-                  <li>Format YouTube / VOD</li>
-                  <li>Cut & Dérushage dynamique</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('1 Vidéo Longue (15€)')">Commander</button>
-            </div>
-
-            <div class="price-card">
-              <div>
-                <h3>Pack 5 Vidéos Longues</h3>
-                <div class="price-amount">65 € <span>/ 75€</span></div>
-                <ul class="price-features">
-                  <li>5 Vidéos Longues / VOD</li>
-                  <li>13€ au lieu de 15€ / unité</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('Pack 5 Vidéos Longues (65€)')">Commander</button>
-            </div>
-
-            <div class="price-card">
-              <div>
-                <h3>Pass Starter</h3>
-                <div class="price-amount">30 € <span>/ mois</span></div>
-                <ul class="price-features">
-                  <li>5 Shorts + 1 Vidéo Longue</li>
-                  <li>Idéal pour démarrer</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('Pass Starter (30€)')">Commander</button>
-            </div>
-
-            <div class="price-card featured">
-              <div class="price-tag">Populaire</div>
-              <div>
-                <h3>Pass Pro</h3>
-                <div class="price-amount">80 € <span>/ mois</span></div>
-                <ul class="price-features">
-                  <li>15 Shorts + 3 Vidéos Longues</li>
-                  <li>Suivi prioritaire</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('Pass Pro (80€)')">Commander</button>
-            </div>
-
-            <div class="price-card">
-              <div>
-                <h3>Pass Ultra VIP</h3>
-                <div class="price-amount">140 € <span>/ mois</span></div>
-                <ul class="price-features">
-                  <li>25 Shorts + 6 Vidéos Longues</li>
-                  <li>Accompagnement éditorial</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('Pass Ultra VIP (140€)')">Commander</button>
-            </div>
-
-            <div class="price-card god-tier">
-              <div class="price-tag god-tag">GOD MODE</div>
-              <div>
-                <h3>⚡ Pass Dieu</h3>
-                <div class="price-amount" style="color:#f59e0b;">250 € <span>/ mois</span></div>
-                <ul class="price-features">
-                  <li>40 Shorts + 10 Vidéos Longues</li>
-                  <li>Retouches illimitées</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" style="background:var(--god-gradient);" onclick="openOrderModal('Pass Dieu GOD MODE (250€)')">Activer GOD MODE</button>
-            </div>
-          </div>
+          <div class="pricing-grid" id="grid-particuliers"></div>
         </div>
 
-        <!-- ETUDIANTS -->
         <div id="cat-etudiants" class="cat-content">
           <div class="student-notice" style="background: rgba(99, 102, 241, 0.1); border: 1px solid var(--accent-color); border-radius: 12px; padding: 1.2rem; margin-bottom: 2rem; text-align: center;">
             <p>🎓 Remise globale ~40% (Lien de justificatif scolaire requis : Drive, Imgur, etc.).</p>
           </div>
-
-          <div class="pricing-grid">
-            <div class="price-card">
-              <div>
-                <h3>1 Short (Édu)</h3>
-                <div class="price-amount">3 € <span>/ 5€</span></div>
-                <ul class="price-features">
-                  <li>Sous-titres animés</li>
-                  <li>Sound design & Zooms</li>
-                </ul>
-              </div>
-              <button class="btn btn-secondary" onclick="openOrderModal('1 Short Édu (3€)')">Commander Édu</button>
-            </div>
-
-            <div class="price-card featured">
-              <div class="price-tag">Remise Shorts</div>
-              <div>
-                <h3>Pack 5 Shorts (Édu)</h3>
-                <div class="price-amount">15 € <span>/ 25€</span></div>
-                <ul class="price-features">
-                  <li>5 Shorts / TikToks</li>
-                  <li>3€ au lieu de 5€ / unité</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('Pack 5 Shorts Édu (15€)')">Commander Édu</button>
-            </div>
-
-            <div class="price-card">
-              <div>
-                <h3>1 Vidéo Longue (Édu)</h3>
-                <div class="price-amount">10 € <span>/ 15€</span></div>
-                <ul class="price-features">
-                  <li>Format YouTube / Exposé</li>
-                  <li>Cut & Dérushage propre</li>
-                </ul>
-              </div>
-              <button class="btn btn-secondary" onclick="openOrderModal('1 Vidéo Longue Édu (10€)')">Commander Édu</button>
-            </div>
-
-            <div class="price-card">
-              <div>
-                <h3>Pack 5 Vidéos (Édu)</h3>
-                <div class="price-amount">40 € <span>/ 75€</span></div>
-                <ul class="price-features">
-                  <li>5 Vidéos Longues / Exposés</li>
-                  <li>8€ au lieu de 15€ / unité</li>
-                </ul>
-              </div>
-              <button class="btn btn-secondary" onclick="openOrderModal('Pack 5 Vidéos Édu (40€)')">Commander Édu</button>
-            </div>
-
-            <div class="price-card">
-              <div>
-                <h3>Pass Starter (Édu)</h3>
-                <div class="price-amount">18 € <span>/ mois</span></div>
-                <ul class="price-features">
-                  <li>5 Shorts + 1 Vidéo Longue</li>
-                  <li>Tarif étudiant spécial</li>
-                </ul>
-              </div>
-              <button class="btn btn-secondary" onclick="openOrderModal('Pass Starter Édu (18€)')">Commander Édu</button>
-            </div>
-
-            <div class="price-card featured">
-              <div class="price-tag">Populaire Édu</div>
-              <div>
-                <h3>Pass Pro (Édu)</h3>
-                <div class="price-amount">50 € <span>/ mois</span></div>
-                <ul class="price-features">
-                  <li>15 Shorts + 3 Vidéos Longues</li>
-                  <li>Suivi prioritaire étudiant</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('Pass Pro Édu (50€)')">Commander Édu</button>
-            </div>
-
-            <div class="price-card">
-              <div>
-                <h3>Pass Ultra VIP (Édu)</h3>
-                <div class="price-amount">85 € <span>/ mois</span></div>
-                <ul class="price-features">
-                  <li>25 Shorts + 6 Vidéos Longues</li>
-                  <li>Accompagnement complet</li>
-                </ul>
-              </div>
-              <button class="btn btn-secondary" onclick="openOrderModal('Pass Ultra VIP Édu (85€)')">Commander Édu</button>
-            </div>
-
-            <div class="price-card god-tier">
-              <div class="price-tag god-tag">ÉDU GOD MODE</div>
-              <div>
-                <h3>⚡ Pass Dieu (Édu)</h3>
-                <div class="price-amount" style="color:#f59e0b;">150 € <span>/ 250€</span></div>
-                <ul class="price-features">
-                  <li>40 Shorts + 10 Vidéos YouTube</li>
-                  <li>Retouches illimitées</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" style="background:var(--god-gradient);" onclick="openOrderModal('Pass Dieu Édu GOD MODE (150€)')">Activer Édu GOD MODE</button>
-            </div>
-          </div>
+          <div class="pricing-grid" id="grid-etudiants"></div>
         </div>
 
-        <!-- BUSINESS -->
         <div id="cat-business" class="cat-content">
-          <div class="pricing-grid">
-            <div class="price-card">
-              <div>
-                <h3>Short Pro / Publicité</h3>
-                <div class="price-amount">15 €</div>
-                <ul class="price-features">
-                  <li>Format vertical 9:16 sponsorisé</li>
-                  <li>Hooks captivants</li>
-                </ul>
-              </div>
-              <button class="btn btn-secondary" onclick="openOrderModal('Short Pro / Publicité (15€)')">Commander</button>
-            </div>
-
-            <div class="price-card featured">
-              <div class="price-tag">Corporate</div>
-              <div>
-                <h3>Vidéo Corporate / Marque</h3>
-                <div class="price-amount">45 €</div>
-                <ul class="price-features">
-                  <li>Présentation entreprise / produit</li>
-                  <li>Habillage graphique pro</li>
-                </ul>
-              </div>
-              <button class="btn btn-primary" onclick="openOrderModal('Vidéo Corporate / Marque (45€)')">Commander</button>
-            </div>
-          </div>
+          <div class="pricing-grid" id="grid-business"></div>
         </div>
       </section>
     </div>
@@ -503,12 +274,12 @@
         <h2>📋 Historique des Mises à Jour (Patch Notes)</h2>
         
         <div class="patchnote-card">
-          <h3 style="color: var(--accent-color);">Version Actuelle — BETA 1.2</h3>
+          <h3 style="color: var(--accent-color);">Version Actuelle — BETA 1.4</h3>
           <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem;">Mise à jour du 28/10/26</p>
           <ul style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;">
-            <li>Intégration du simulateur de devis visuel interactif.</li>
-            <li>Ajout du badge de disponibilité en direct administrable.</li>
-            <li>Application dynamique des codes promo et validation des commandes.</li>
+            <li>Gestionnaire dynamique de catalogue d'offres administrable en direct.</li>
+            <li>Synchronisation automatique des formules du site avec le panel admin.</li>
+            <li>Simulateur de devis visuel et badge de disponibilité réactif.</li>
           </ul>
         </div>
       </section>
@@ -574,26 +345,7 @@
             <h4 style="margin-bottom:1rem;">📦 Passer une nouvelle commande</h4>
             <div class="form-group">
               <label>Formule / Pass choisi</label>
-              <select id="newOrderPlan" onchange="checkIfEduOrder()">
-                <option value="1 Short / TikTok (5€)">1 Short / TikTok (5€)</option>
-                <option value="Pack 5 Shorts (20€)">Pack 5 Shorts (20€)</option>
-                <option value="1 Vidéo Longue (15€)">1 Vidéo Longue (15€)</option>
-                <option value="Pack 5 Vidéos Longues (65€)">Pack 5 Vidéos Longues (65€)</option>
-                <option value="Pass Starter (30€)">Pass Starter (30€)</option>
-                <option value="Pass Pro (80€)">Pass Pro (80€)</option>
-                <option value="Pass Ultra VIP (140€)">Pass Ultra VIP (140€)</option>
-                <option value="Pass Dieu GOD MODE (250€)">Pass Dieu GOD MODE (250€)</option>
-                <option value="1 Short Édu (3€)">1 Short Édu (3€)</option>
-                <option value="Pack 5 Shorts Édu (15€)">Pack 5 Shorts Édu (15€)</option>
-                <option value="1 Vidéo Longue Édu (10€)">1 Vidéo Longue Édu (10€)</option>
-                <option value="Pack 5 Vidéos Édu (40€)">Pack 5 Vidéos Édu (40€)</option>
-                <option value="Pass Starter Édu (18€)">Pass Starter Édu (18€)</option>
-                <option value="Pass Pro Édu (50€)">Pass Pro Édu (50€)</option>
-                <option value="Pass Ultra VIP Édu (85€)">Pass Ultra VIP Édu (85€)</option>
-                <option value="Pass Dieu Édu GOD MODE (150€)">Pass Dieu Édu GOD MODE (150€)</option>
-                <option value="Short Pro / Publicité (15€)">Short Pro / Publicité (15€)</option>
-                <option value="Vidéo Corporate / Marque (45€)">Vidéo Corporate / Marque (45€)</option>
-              </select>
+              <select id="newOrderPlan" onchange="checkIfEduOrder()"></select>
             </div>
 
             <div class="form-group">
@@ -630,6 +382,31 @@
     let currentUser = JSON.parse(localStorage.getItem('overkoro_current_user')) || null;
     let currentCalcFormat = 'short';
 
+    const defaultCatalog = [
+      { id: 1, title: '1 Short / TikTok', price: 5, category: 'particuliers', features: ['Durée jusqu\'à 60s', 'Sous-titres animés & Zooms'], badge: '', isGod: false },
+      { id: 2, title: 'Pack 5 Shorts', price: 20, category: 'particuliers', features: ['5 Shorts / TikToks', '4€ au lieu de 5€ / unité'], badge: '1 Short Offert', isGod: false },
+      { id: 3, title: '1 Vidéo Longue', price: 15, category: 'particuliers', features: ['Format YouTube / VOD', 'Cut & Dérushage dynamique'], badge: '', isGod: false },
+      { id: 4, title: 'Pack 5 Vidéos Longues', price: 65, category: 'particuliers', features: ['5 Vidéos Longues / VOD', '13€ au lieu de 15€ / unité'], badge: '', isGod: false },
+      { id: 5, title: 'Pass Streamer / VOD', price: 45, category: 'particuliers', features: ['8 Shorts / mois tirés de VODs', 'Intégration facecam & sous-titres'], badge: 'Spécial Twitch', isGod: false },
+      { id: 6, title: 'Pass Shorts Express', price: 110, category: 'particuliers', features: ['30 Shorts par mois (1/jour)', 'Livraison ultra-prioritaire'], badge: 'Volume Intensif', isGod: false },
+      { id: 7, title: 'Clip Musical / AMV / Gaming', price: 25, category: 'particuliers', features: ['Synchro parfaite sur le beat', 'Effets After Effects avancés (VFX)'], badge: '', isGod: false },
+      { id: 8, title: 'Coaching & Audit Montage', price: 15, category: 'particuliers', features: ['Analyse détaillée de votre montage', 'Conseils rétention & rythme'], badge: '', isGod: false },
+      { id: 9, title: 'Pass Starter', price: 30, category: 'particuliers', features: ['5 Shorts + 1 Vidéo Longue', 'Idéal pour démarrer'], badge: '', isGod: false },
+      { id: 10, title: 'Pass Pro', price: 80, category: 'particuliers', features: ['15 Shorts + 3 Vidéos Longues', 'Suivi prioritaire'], badge: 'Populaire', isGod: false },
+      { id: 11, title: 'Pass Ultra VIP', price: 140, category: 'particuliers', features: ['25 Shorts + 6 Vidéos Longues', 'Accompagnement éditorial'], badge: '', isGod: false },
+      { id: 12, title: 'Pass Dieu', price: 250, category: 'particuliers', features: ['40 Shorts + 10 Vidéos Longues', 'Retouches illimitées'], badge: 'GOD MODE', isGod: true },
+      { id: 13, title: '1 Short (Édu)', price: 3, category: 'etudiants', features: ['Sous-titres animés', 'Sound design & Zooms'], badge: '', isGod: false },
+      { id: 14, title: 'Pack 5 Shorts (Édu)', price: 15, category: 'etudiants', features: ['5 Shorts / TikToks', '3€ au lieu de 5€ / unité'], badge: 'Remise Shorts', isGod: false },
+      { id: 15, title: '1 Vidéo Longue (Édu)', price: 10, category: 'etudiants', features: ['Format YouTube / Exposé', 'Cut & Dérushage propre'], badge: '', isGod: false },
+      { id: 16, title: 'Pack 5 Vidéos (Édu)', price: 40, category: 'etudiants', features: ['5 Vidéos Longues / Exposés', '8€ au lieu de 15€ / unité'], badge: '', isGod: false },
+      { id: 17, title: 'Pass Starter (Édu)', price: 18, category: 'etudiants', features: ['5 Shorts + 1 Vidéo Longue', 'Tarif étudiant spécial'], badge: '', isGod: false },
+      { id: 18, title: 'Pass Pro (Édu)', price: 50, category: 'etudiants', features: ['15 Shorts + 3 Vidéos Longues', 'Suivi prioritaire étudiant'], badge: 'Populaire Édu', isGod: false },
+      { id: 19, title: 'Pass Ultra VIP (Édu)', price: 85, category: 'etudiants', features: ['25 Shorts + 6 Vidéos Longues', 'Accompagnement complet'], badge: '', isGod: false },
+      { id: 20, title: 'Pass Dieu (Édu)', price: 150, category: 'etudiants', features: ['40 Shorts + 10 Vidéos YouTube', 'Retouches illimitées'], badge: 'ÉDU GOD MODE', isGod: true },
+      { id: 21, title: 'Short Pro / Publicité', price: 15, category: 'business', features: ['Format vertical 9:16 sponsorisé', 'Hooks captivants'], badge: '', isGod: false },
+      { id: 22, title: 'Vidéo Corporate / Marque', price: 45, category: 'business', features: ['Présentation entreprise / produit', 'Habillage graphique pro'], badge: 'Corporate', isGod: false }
+    ];
+
     window.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('overkoro_theme') || 'default';
       const savedMode = localStorage.getItem('overkoro_lightmode') || 'false';
@@ -642,9 +419,52 @@
         document.getElementById('themeSelector').value = savedTheme;
       }
       loadHeaderAvailability();
+      renderCatalogUI();
       calculateVisualDevis();
       checkForUnreadAdminMessages();
     });
+
+    function getCatalog() {
+      let catalog = JSON.parse(localStorage.getItem('overkoro_catalog_db'));
+      if (!catalog || catalog.length === 0) {
+        localStorage.setItem('overkoro_catalog_db', JSON.stringify(defaultCatalog));
+        return defaultCatalog;
+      }
+      return catalog;
+    }
+
+    function renderCatalogUI() {
+      const catalog = getCatalog();
+      const gridPart = document.getElementById('grid-particuliers');
+      const gridEdu = document.getElementById('grid-etudiants');
+      const gridBiz = document.getElementById('grid-business');
+      const selectPlan = document.getElementById('newOrderPlan');
+
+      gridPart.innerHTML = ''; gridEdu.innerHTML = ''; gridBiz.innerHTML = ''; selectPlan.innerHTML = '';
+
+      catalog.forEach(item => {
+        const fullPlanName = `${item.title} (${item.price}€)`;
+        selectPlan.innerHTML += `<option value="${fullPlanName}">${fullPlanName}</option>`;
+
+        const card = document.createElement('div');
+        card.className = `price-card ${item.badge ? 'featured' : ''} ${item.isGod ? 'god-tier' : ''}`;
+        card.innerHTML = `
+          ${item.badge ? `<div class="price-tag ${item.isGod ? 'god-tag' : ''}">${item.badge}</div>` : ''}
+          <div>
+            <h3>${item.title}</h3>
+            <div class="price-amount" ${item.isGod ? 'style="color:#f59e0b;"' : ''}>${item.price} €</div>
+            <ul class="price-features">
+              ${(item.features || []).map(f => `<li>${f}</li>`).join('')}
+            </ul>
+          </div>
+          <button class="btn btn-primary" ${item.isGod ? 'style="background:var(--god-gradient);"' : ''} onclick="openOrderModal('${fullPlanName}')">Commander</button>
+        `;
+
+        if (item.category === 'particuliers') gridPart.appendChild(card);
+        else if (item.category === 'etudiants') gridEdu.appendChild(card);
+        else if (item.category === 'business') gridBiz.appendChild(card);
+      });
+    }
 
     function loadHeaderAvailability() {
       const status = localStorage.getItem('overkoro_availability_status') || 'available';
@@ -686,7 +506,6 @@
       event.target.classList.add('active');
     }
 
-    // Gestion Option 3 : Simulateur Visuel
     function selectFormat(format) {
       currentCalcFormat = format;
       document.getElementById('optFormatShort').classList.toggle('selected', format === 'short');

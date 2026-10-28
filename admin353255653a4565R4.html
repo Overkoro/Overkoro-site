@@ -37,12 +37,12 @@
     th, td { padding: 0.9rem; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; vertical-align: top; }
     th { color: var(--text-muted); font-weight: 600; }
 
-    select, input[type="text"], input[type="url"], button {
+    select, input[type="text"], input[type="url"], input[type="number"], button {
       padding: 0.4rem 0.7rem; border-radius: 6px; border: 1px solid var(--border-color);
       background: var(--bg-color); color: #fff; font-size: 0.85rem; cursor: pointer;
     }
 
-    input[type="url"], input[type="text"] { width: 150px; cursor: text; }
+    input[type="url"], input[type="text"], input[type="number"] { cursor: text; }
     .btn-danger { background: var(--danger-color); border: none; font-weight: 600; color: #fff; }
     .btn-save { background: var(--success-color); border: none; font-weight: 600; color: #fff; margin-left: 0.3rem; }
     .btn-refresh { background: var(--accent-color); border: none; font-weight: 600; padding: 0.6rem 1.2rem; border-radius: 6px; color: #fff; }
@@ -55,7 +55,7 @@
   <header>
     <div>
       <h1>Panel Administration Overkoro</h1>
-      <p style="color:var(--text-muted);">Suivi des commandes, validation des paiements et gestion des codes promo.</p>
+      <p style="color:var(--text-muted);">Suivi des commandes, gestion dynamique du catalogue et codes promo.</p>
     </div>
     <div style="display:flex; gap:1rem; align-items:center;">
       <button class="btn-refresh" onclick="loadAdminData()">🔄 Actualiser</button>
@@ -63,10 +63,10 @@
     </div>
   </header>
 
-  <!-- GESTION STATUT DISPONIBILITÉ (Option 4) -->
+  <!-- GESTION STATUT DISPONIBILITÉ -->
   <div class="card" style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
     <div>
-      <h3>🟢 Statut de Disponibilité en Direct (Option 4)</h3>
+      <h3>🟢 Statut de Disponibilité en Direct</h3>
       <p style="color:var(--text-muted); font-size:0.85rem;">Modifie l'affichage du badge directement sur le site client.</p>
     </div>
     <div style="display:flex; gap:0.5rem;">
@@ -91,6 +91,39 @@
     </div>
   </div>
 
+  <!-- CREATION / GESTION DES FORMULES & PASSES EN DIRECT -->
+  <div class="card" style="margin-bottom:2rem;">
+    <h3>✨ Création Directe de Formules & Passes (Catalogue En-Ligne)</h3>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:0.8rem; margin-top:1rem; margin-bottom:1rem;">
+      <input type="text" id="catTitle" placeholder="Titre (ex: Pass Kick Pro)">
+      <input type="number" id="catPrice" placeholder="Prix (€)" min="1">
+      <select id="catCategory">
+        <option value="particuliers">Particuliers / Créateurs</option>
+        <option value="etudiants">Étudiants (-40%)</option>
+        <option value="business">Business / Corporate</option>
+      </select>
+      <input type="text" id="catBadge" placeholder="Badge (ex: Populaire, GOD MODE)">
+      <input type="text" id="catFeatures" placeholder="Points clés (séparés par des virgules)">
+    </div>
+    <button class="btn-save" style="padding:0.6rem 1rem;" onclick="addCatalogItem()">➕ Publier la formule sur le site</button>
+
+    <h4 style="margin-top:1.5rem;">📋 Catalogue Actuel</h4>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Prix</th>
+            <th>Catégorie</th>
+            <th>Badge</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="adminCatalogTable"></tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- COMMANDES -->
   <div class="card" style="margin-bottom:2rem; overflow-x:auto;">
     <h3>📦 Gestion des Commandes & Paiements</h3>
@@ -107,9 +140,7 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody id="adminOrdersTable">
-        <!-- JS -->
-      </tbody>
+      <tbody id="adminOrdersTable"></tbody>
     </table>
   </div>
 
@@ -129,9 +160,7 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody id="adminPromosTable">
-        <!-- JS -->
-      </tbody>
+      <tbody id="adminPromosTable"></tbody>
     </table>
   </div>
 
@@ -148,9 +177,7 @@
           <th>Action</th>
         </tr>
       </thead>
-      <tbody id="adminUsersTable">
-        <!-- JS -->
-      </tbody>
+      <tbody id="adminUsersTable"></tbody>
     </table>
   </div>
 
@@ -175,6 +202,7 @@
     function loadAdminData() {
       const users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
       const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const catalog = JSON.parse(localStorage.getItem('overkoro_catalog_db')) || [];
       let promos = JSON.parse(localStorage.getItem('overkoro_promos_db')) || [
         { code: 'FIRST10', discount: '10%' },
         { code: 'OVERKORO', discount: '20%' }
@@ -185,30 +213,27 @@
 
       let rev = orders.reduce((acc, o) => {
         if (o.paymentStatus === 'Payé' || o.status === 'Terminée') {
-          if (o.plan.includes('250€') || o.plan.includes('GOD')) return acc + 250;
-          if (o.plan.includes('150€')) return acc + 150;
-          if (o.plan.includes('140€')) return acc + 140;
-          if (o.plan.includes('85€')) return acc + 85;
-          if (o.plan.includes('80€')) return acc + 80;
-          if (o.plan.includes('65€')) return acc + 65;
-          if (o.plan.includes('50€')) return acc + 50;
-          if (o.plan.includes('45€')) return acc + 45;
-          if (o.plan.includes('40€')) return acc + 40;
-          if (o.plan.includes('30€')) return acc + 30;
-          if (o.plan.includes('20€')) return acc + 20;
-          if (o.plan.includes('18€')) return acc + 18;
-          if (o.plan.includes('15€')) return acc + 15;
-          if (o.plan.includes('10€')) return acc + 10;
-          if (o.plan.includes('5€')) return acc + 5;
-          if (o.plan.includes('3€')) return acc + 3;
+          const match = o.plan.match(/\((\d+)€\)/);
+          if (match && match[1]) return acc + parseInt(match[1]);
         }
         return acc;
       }, 0);
       document.getElementById('statRevenue').innerText = rev + ' €';
 
-      let pendingCount = orders.filter(o => o.status === 'Reçue' || o.status === 'En-attente-justificatif').length;
-      if (pendingCount > 0) {
-        document.getElementById('adminTitle').innerText = `🔴 (${pendingCount}) Commandes en attente — Overkoro Admin`;
+      // Table Catalogue
+      const catTable = document.getElementById('adminCatalogTable');
+      if (catalog.length === 0) {
+        catTable.innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);">Aucune formule dans le catalogue.</td></tr>`;
+      } else {
+        catTable.innerHTML = catalog.map((item, idx) => `
+          <tr>
+            <td><strong>${item.title}</strong></td>
+            <td>${item.price} €</td>
+            <td>${item.category}</td>
+            <td>${item.badge || '-'}</td>
+            <td><button class="btn-danger" onclick="deleteCatalogItem(${idx})">❌ Supprimer</button></td>
+          </tr>
+        `).join('');
       }
 
       // Orders Table
@@ -305,6 +330,46 @@
             </tr>
           `;
         }).join('');
+      }
+    }
+
+    function addCatalogItem() {
+      const title = document.getElementById('catTitle').value.trim();
+      const price = parseFloat(document.getElementById('catPrice').value);
+      const category = document.getElementById('catCategory').value;
+      const badge = document.getElementById('catBadge').value.trim();
+      const featuresRaw = document.getElementById('catFeatures').value.trim();
+
+      if (!title || isNaN(price)) return alert("Veuillez renseigner au moins un titre et un prix valide !");
+
+      const features = featuresRaw ? featuresRaw.split(',').map(f => f.trim()) : ['Inclus dans la formule'];
+      const catalog = JSON.parse(localStorage.getItem('overkoro_catalog_db')) || [];
+
+      catalog.push({
+        id: Date.now(),
+        title,
+        price,
+        category,
+        badge,
+        features,
+        isGod: badge.toUpperCase().includes('GOD')
+      });
+
+      localStorage.setItem('overkoro_catalog_db', JSON.stringify(catalog));
+      alert("Nouvelle formule publiée sur le site !");
+      document.getElementById('catTitle').value = '';
+      document.getElementById('catPrice').value = '';
+      document.getElementById('catBadge').value = '';
+      document.getElementById('catFeatures').value = '';
+      loadAdminData();
+    }
+
+    function deleteCatalogItem(index) {
+      if (confirm("Supprimer cette formule du catalogue ?")) {
+        let catalog = JSON.parse(localStorage.getItem('overkoro_catalog_db')) || [];
+        catalog.splice(index, 1);
+        localStorage.setItem('overkoro_catalog_db', JSON.stringify(catalog));
+        loadAdminData();
       }
     }
 
