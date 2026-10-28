@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="pageTitle">Overkoro — Portfolio & Espace Client</title>
+  <title id="pageTitle">Overkoro -service de montage vidéo</title>
   <style>
     :root {
       --bg-color: #0d0f12;
@@ -480,12 +480,12 @@
         <h2>📋 Historique des Mises à Jour (Patch Notes)</h2>
         
         <div class="patchnote-card">
-          <h3 style="color: var(--accent-color);">Version Actuelle — Formules Complètes & Passes</h3>
+          <h3 style="color: var(--accent-color);">Version Actuelle — Gestionnaire de Codes Promo Admin</h3>
           <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem;">Mise à jour récente</p>
           <ul style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;">
-            <li>Ajout de l'ensemble des formules Particuliers, Étudiants et Business dans le catalogue et le formulaire de commande.</li>
-            <li>Calculateur de devis interactif mis à jour.</li>
-            <li>Système de paiement sécurisé Revolut actif.</li>
+            <li>Ajout d'un module de création et de suppression de codes promo directement depuis le panel administrateur.</li>
+            <li>Application dynamique des réductions personnalisées lors de la validation des commandes clients.</li>
+            <li>Intégration complète de toutes les grilles tarifaires Particuliers, Étudiants et Business.</li>
           </ul>
         </div>
       </section>
@@ -580,7 +580,7 @@
 
             <div class="form-group">
               <label>Code Promo (Optionnel)</label>
-              <input type="text" id="promoCodeInput" placeholder="Ex: FIRST10 ou OVERKORO">
+              <input type="text" id="promoCodeInput" placeholder="Ex: FIRST10 ou PROMO50">
             </div>
 
             <div class="form-group" id="eduFileGroup" style="display:none; background:rgba(99,102,241,0.05); border:1px dashed var(--accent-color); padding:1rem; border-radius:8px;">
@@ -761,7 +761,7 @@
       if (!currentUser) return;
       const plan = document.getElementById('newOrderPlan').value;
       const link = document.getElementById('newOrderLink').value.trim();
-      const promo = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+      const promoInput = document.getElementById('promoCodeInput').value.trim().toUpperCase();
       const isEdu = plan.includes('Édu') || plan.includes('Édu GOD MODE');
       const eduFileInput = document.getElementById('eduFileInput');
       const eduFileLink = eduFileInput ? eduFileInput.value.trim() : '';
@@ -770,16 +770,28 @@
         return alert("Veuillez indiquer un lien vers votre justificatif scolaire pour bénéficier du tarif Édu !");
       }
 
-      let discountMsg = "";
-      if (promo === "FIRST10") discountMsg = " (Code promo FIRST10 appliqué : -10%)";
-      if (promo === "OVERKORO") discountMsg = " (Code promo OVERKORO appliqué : -20%)";
+      // Vérification des codes promo enregistrés par l'admin
+      let promoList = JSON.parse(localStorage.getItem('overkoro_promos_db')) || [
+        { code: 'FIRST10', discount: '10%' },
+        { code: 'OVERKORO', discount: '20%' }
+      ];
+
+      let appliedDiscount = "";
+      if (promoInput) {
+        const foundPromo = promoList.find(p => p.code === promoInput);
+        if (foundPromo) {
+          appliedDiscount = ` (Code ${foundPromo.code} appliqué : -${foundPromo.discount})`;
+        } else {
+          return alert("Code promo invalide !");
+        }
+      }
 
       const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
       const newOrder = {
         id: 'ORD-' + Math.floor(1000 + Math.random() * 9000),
         userEmail: currentUser.email,
         userName: currentUser.name,
-        plan: plan + discountMsg,
+        plan: plan + appliedDiscount,
         link: link || 'Non fourni',
         deliveryLink: '',
         status: isEdu ? 'En-attente-justificatif' : 'Reçue',
