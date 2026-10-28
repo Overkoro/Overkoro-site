@@ -18,7 +18,7 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-main); padding: 2.5rem 5%; display: none; } /* Caché par défaut avant authentification */
+    body { background-color: var(--bg-color); color: var(--text-main); padding: 2.5rem 5%; display: none; }
 
     header {
       display: flex; justify-content: space-between; align-items: center;
@@ -62,6 +62,18 @@
       <span class="badge-admin">🔑 ACCÈS ADMIN SÉCURISÉ</span>
     </div>
   </header>
+
+  <!-- GESTION STATUT DISPONIBILITÉ (Option 4) -->
+  <div class="card" style="margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <h3>🟢 Statut de Disponibilité en Direct (Option 4)</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem;">Modifie l'affichage du badge directement sur le site client.</p>
+    </div>
+    <div style="display:flex; gap:0.5rem;">
+      <button class="btn-validate" onclick="setAvailability('available')">🟢 Disponible</button>
+      <button class="btn-reject" onclick="setAvailability('busy')">🔴 Complet / Sur-booké</button>
+    </div>
+  </div>
 
   <!-- STATS -->
   <div class="grid">
@@ -143,17 +155,21 @@
   </div>
 
   <script>
-    // Vérification du mot de passe administrateur dès l'ouverture
     const adminPassword = "Overkoro@2013!";
     const enteredPassword = prompt("Veuillez entrer le mot de passe administrateur :");
 
     if (enteredPassword === adminPassword) {
-      document.body.style.display = "block"; // Affiche le panel si le mot de passe est correct
+      document.body.style.display = "block";
       loadAdminData();
     } else {
       alert("Mot de passe incorrect ! Accès refusé.");
       document.body.innerHTML = "<h2 style='color:#ef4444; text-align:center; margin-top:20vh;'>🔒 Accès non autorisé. Rechargez la page pour réessayer.</h2>";
       document.body.style.display = "block";
+    }
+
+    function setAvailability(status) {
+      localStorage.setItem('overkoro_availability_status', status);
+      alert(status === 'available' ? "Statut mis à jour : 🟢 Disponible" : "Statut mis à jour : 🔴 Complet");
     }
 
     function loadAdminData() {

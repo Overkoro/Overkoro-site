@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title id="pageTitle">Overkoro -service de montage vidéo</title>
+  <title id="pageTitle">Overkoro — Portfolio & Espace Client</title>
   <style>
     :root {
       --bg-color: #0d0f12;
@@ -41,7 +41,7 @@
     header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 1.2rem 8%; border-bottom: 1px solid var(--border-color);
-      background: var(--card-bg); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px);
+      background: var(--card-bg); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); flex-wrap: wrap; gap: 1rem;
     }
 
     .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; }
@@ -55,6 +55,11 @@
     .nav-tab:hover { color: var(--text-main); }
     .nav-tab.active { color: var(--text-main); background: var(--card-bg-hover); border: 1px solid var(--border-color); }
 
+    .availability-badge {
+      font-size: 0.8rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 50px; background: rgba(34, 197, 94, 0.15); color: var(--success-color); border: 1px solid var(--success-color);
+    }
+    .availability-badge.busy { background: rgba(239, 68, 68, 0.15); color: var(--danger-color); border-color: var(--danger-color); }
+
     .theme-picker select {
       background: var(--card-bg-hover); color: var(--text-main); border: 1px solid var(--border-color);
       padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer;
@@ -65,7 +70,6 @@
     .btn-primary:hover { background: var(--accent-hover); }
     .btn-secondary { background: var(--card-bg-hover); color: var(--text-main); border: 1px solid var(--border-color); }
     .btn-download { background: var(--success-color); color: #fff; font-size: 0.85rem; padding: 0.5rem 1rem; margin-top: 0.6rem; }
-    .btn-download:hover { background: #16a34a; }
 
     .page-section { display: none; }
     .page-section.active { display: block; }
@@ -134,7 +138,13 @@
     .msg.client { background: rgba(99,102,241,0.2); color: var(--text-main); margin-left: auto; text-align: right; }
     .msg.admin { background: rgba(34,197,94,0.2); color: var(--text-main); }
 
+    /* Style Option 3 : Simulateur Visuel */
     .calc-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; max-width: 850px; margin: 2rem auto; }
+    .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .calc-option-card {
+      background: var(--card-bg-hover); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.2rem; text-align: center; cursor: pointer; transition: all 0.2s;
+    }
+    .calc-option-card.selected { border-color: var(--accent-color); background: rgba(99,102,241,0.1); }
 
     .payment-links-box {
       background: var(--card-bg-hover); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
@@ -151,11 +161,15 @@
 <body>
 
   <header>
-    <div class="logo">OVERKORO<span>.</span></div>
+    <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+      <div class="logo">OVERKORO<span>.</span></div>
+      <!-- Option 4 : Badge de disponibilité en direct -->
+      <div id="headerAvailability" class="availability-badge">🟢 Créneaux disponibles</div>
+    </div>
     <nav>
       <button class="nav-tab active" onclick="switchPage('home')">Accueil</button>
       <button class="nav-tab" onclick="switchPage('offres')">Formules & Passes</button>
-      <button class="nav-tab" onclick="switchPage('calculator')">🧮 Devis en Ligne</button>
+      <button class="nav-tab" onclick="switchPage('calculator')">🧮 Devis Interactif</button>
       <button class="nav-tab" onclick="switchPage('patchnotes')">📋 Patch Notes</button>
       <button class="nav-tab" onclick="switchPage('account')" id="accountTabNav">Espace Client</button>
 
@@ -176,39 +190,48 @@
     <!-- ACCUEIL -->
     <div id="page-home" class="page-section active">
       <section style="text-align: center; padding: 4rem 8%;">
-        <h1 style="font-size: 2.8rem; margin-bottom: 1rem;">Montage Vidéo Dynamique <span style="background:var(--accent-gradient); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">YouTube & TikTok</span></h1>
+        <h1 style="font-size: 2.8rem; margin-bottom: 1rem;">Overkoro — Portfolio & Espace Client</h1>
         <p style="color:var(--text-muted); margin-bottom: 2rem;">Cuts rythmés, sous-titres animés et sound design sous Premiere Pro & After Effects.</p>
         <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
           <button class="btn btn-primary" onclick="switchPage('offres')">Voir les formules</button>
-          <button class="btn btn-secondary" onclick="switchPage('calculator')">Calculer un devis instantané</button>
+          <button class="btn btn-secondary" onclick="switchPage('calculator')">Simulateur de Devis Visuel</button>
         </div>
       </section>
     </div>
 
-    <!-- CALCULATEUR -->
+    <!-- CALCULATEUR (OPTION 3 : Typeur de projet visuel) -->
     <div id="page-calculator" class="page-section">
       <section>
-        <h2>Calculateur de Devis Interactif</h2>
+        <h2>🎛️ Simulateur de Devis Interactif</h2>
         <div class="calc-box">
-          <div class="form-group">
-            <label>Nombre de Shorts / TikToks (5€ / unité)</label>
-            <input type="number" id="calcShorts" min="0" value="0" oninput="calculateDevis()">
-          </div>
-          <div class="form-group">
-            <label>Nombre de Vidéos Longues (15€ / unité)</label>
-            <input type="number" id="calcLongs" min="0" value="0" oninput="calculateDevis()">
-          </div>
-          <div class="form-group">
-            <label>Options & Suppléments</label>
-            <div style="display:flex; gap:1rem; flex-direction:column; margin-top:0.4rem;">
-              <label style="font-weight:normal; font-size:0.9rem;"><input type="checkbox" id="calcMiniature" onchange="calculateDevis()"> Miniatures YouTube Pro (+4€)</label>
-              <label style="font-weight:normal; font-size:0.9rem;"><input type="checkbox" id="calcEdu" onchange="calculateDevis()"> Statut Étudiant / Édu (-40% sur le total)</label>
+          <h3 style="margin-bottom:1rem;">Étape 1 : Choisissez votre format principal</h3>
+          <div class="step-grid">
+            <div class="calc-option-card selected" id="optFormatShort" onclick="selectFormat('short')">
+              <h4>Short / TikTok</h4>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">5 € / unité</p>
+            </div>
+            <div class="calc-option-card" id="optFormatLong" onclick="selectFormat('long')">
+              <h4>Vidéo Longue</h4>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">15 € / unité</p>
             </div>
           </div>
-          <div style="background:var(--card-bg-hover); padding:1.2rem; border-radius:10px; text-align:center; margin-top:1.5rem;">
-            <p style="font-size:0.9rem; color:var(--text-muted);">Estimation du montant total :</p>
-            <h3 id="calcTotal" style="font-size:2.5rem; color:var(--accent-color); margin:0.4rem 0;">0 €</h3>
-            <p id="calcDelay" style="font-size:0.85rem; color:var(--text-muted);">Délai estimé : 24 à 48h</p>
+
+          <div class="form-group" style="margin-top:1.5rem;">
+            <label id="quantityLabel">Nombre de Shorts souhaités :</label>
+            <input type="number" id="calcQuantity" min="1" value="1" oninput="calculateVisualDevis()">
+          </div>
+
+          <h3 style="margin:1.5rem 0 1rem 0;">Étape 2 : Options & Suppléments</h3>
+          <div style="display:flex; gap:1rem; flex-direction:column;">
+            <label style="font-weight:normal; font-size:0.9rem; cursor:pointer;"><input type="checkbox" id="calcMiniature" onchange="calculateVisualDevis()"> Ajouter une Miniature YouTube Pro (+4€)</label>
+            <label style="font-weight:normal; font-size:0.9rem; cursor:pointer;"><input type="checkbox" id="calcEdu" onchange="calculateVisualDevis()"> Statut Étudiant / Édu (-40% sur le total)</label>
+          </div>
+
+          <div style="background:var(--card-bg-hover); padding:1.5rem; border-radius:12px; text-align:center; margin-top:2rem;">
+            <p style="font-size:0.9rem; color:var(--text-muted);">Estimation instantanée du projet :</p>
+            <h3 id="calcTotal" style="font-size:2.8rem; color:var(--accent-color); margin:0.4rem 0;">5.00 €</h3>
+            <p id="calcDelay" style="font-size:0.85rem; color:var(--text-muted);">Délai de livraison estimé : 24 à 48h</p>
+            <button class="btn btn-primary" style="margin-top:1rem;" onclick="orderFromCalculator()">commander cette configuration</button>
           </div>
         </div>
       </section>
@@ -480,12 +503,12 @@
         <h2>📋 Historique des Mises à Jour (Patch Notes)</h2>
         
         <div class="patchnote-card">
-          <h3 style="color: var(--accent-color);">Version Actuelle — BETA 1.1</h3>
-          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem;">Mise à jour le 28/10/26</p>
+          <h3 style="color: var(--accent-color);">Version Actuelle — BETA 1.2</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem;">Mise à jour du 28/10/26</p>
           <ul style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;">
-            <li>Mofification du titre principale.</li>
-            <li>Application dynamique des réductions personnalisées lors de la validation des commandes clients.</li>
-            <li>Intégration complète de toutes les grilles tarifaires Particuliers, Étudiants et Business.</li>
+            <li>Intégration du simulateur de devis visuel interactif.</li>
+            <li>Ajout du badge de disponibilité en direct administrable.</li>
+            <li>Application dynamique des codes promo et validation des commandes.</li>
           </ul>
         </div>
       </section>
@@ -580,7 +603,7 @@
 
             <div class="form-group">
               <label>Code Promo (Optionnel)</label>
-              <input type="text" id="promoCodeInput" placeholder="Ex: FIRST10 ou PROMO50">
+              <input type="text" id="promoCodeInput" placeholder="Ex: FIRST10 ou OVERKORO">
             </div>
 
             <div class="form-group" id="eduFileGroup" style="display:none; background:rgba(99,102,241,0.05); border:1px dashed var(--accent-color); padding:1rem; border-radius:8px;">
@@ -605,6 +628,7 @@
   <script>
     let isRegisterMode = false;
     let currentUser = JSON.parse(localStorage.getItem('overkoro_current_user')) || null;
+    let currentCalcFormat = 'short';
 
     window.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('overkoro_theme') || 'default';
@@ -617,8 +641,22 @@
         document.body.classList.add('theme-' + savedTheme);
         document.getElementById('themeSelector').value = savedTheme;
       }
+      loadHeaderAvailability();
+      calculateVisualDevis();
       checkForUnreadAdminMessages();
     });
+
+    function loadHeaderAvailability() {
+      const status = localStorage.getItem('overkoro_availability_status') || 'available';
+      const badge = document.getElementById('headerAvailability');
+      if (status === 'busy') {
+        badge.className = "availability-badge busy";
+        badge.innerText = "🔴 Complet / Sur-booké";
+      } else {
+        badge.className = "availability-badge";
+        badge.innerText = "🟢 Créneaux disponibles";
+      }
+    }
 
     function toggleLightMode() {
       document.body.classList.toggle('light-mode');
@@ -648,17 +686,32 @@
       event.target.classList.add('active');
     }
 
-    function calculateDevis() {
-      const shorts = parseInt(document.getElementById('calcShorts').value) || 0;
-      const longs = parseInt(document.getElementById('calcLongs').value) || 0;
+    // Gestion Option 3 : Simulateur Visuel
+    function selectFormat(format) {
+      currentCalcFormat = format;
+      document.getElementById('optFormatShort').classList.toggle('selected', format === 'short');
+      document.getElementById('optFormatLong').classList.toggle('selected', format === 'long');
+      document.getElementById('quantityLabel').innerText = format === 'short' ? 'Nombre de Shorts souhaités :' : 'Nombre de Vidéos Longues souhaitées :';
+      calculateVisualDevis();
+    }
+
+    function calculateVisualDevis() {
+      const qty = parseInt(document.getElementById('calcQuantity').value) || 1;
       const miniature = document.getElementById('calcMiniature').checked;
       const isEdu = document.getElementById('calcEdu').checked;
 
-      let total = (shorts * 5) + (longs * 15);
+      let unitPrice = currentCalcFormat === 'short' ? 5 : 15;
+      let total = qty * unitPrice;
       if (miniature) total += 4;
       if (isEdu) total = total * 0.6;
 
       document.getElementById('calcTotal').innerText = total.toFixed(2) + ' €';
+    }
+
+    function orderFromCalculator() {
+      const qty = document.getElementById('calcQuantity').value;
+      const planName = currentCalcFormat === 'short' ? `${qty} Short(s) / TikTok(s)` : `${qty} Vidéo(s) Longue(s)`;
+      openOrderModal(planName);
     }
 
     function checkIfEduOrder() {
@@ -748,11 +801,18 @@
       }
       switchPage('account');
       const select = document.getElementById('newOrderPlan');
+      let found = false;
       for (let i = 0; i < select.options.length; i++) {
         if (select.options[i].value === planName) {
           select.selectedIndex = i;
+          found = true;
           break;
         }
+      }
+      if (!found && select.options.length > 0) {
+        select.selectedIndex = 0;
+        select.options[0].value = planName;
+        select.options[0].text = planName;
       }
       checkIfEduOrder();
     }
@@ -770,7 +830,6 @@
         return alert("Veuillez indiquer un lien vers votre justificatif scolaire pour bénéficier du tarif Édu !");
       }
 
-      // Vérification des codes promo enregistrés par l'admin
       let promoList = JSON.parse(localStorage.getItem('overkoro_promos_db')) || [
         { code: 'FIRST10', discount: '10%' },
         { code: 'OVERKORO', discount: '20%' }
