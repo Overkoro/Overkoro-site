@@ -46,6 +46,8 @@
     .btn-danger { background: var(--danger-color); border: none; font-weight: 600; color: #fff; }
     .btn-save { background: var(--success-color); border: none; font-weight: 600; color: #fff; margin-left: 0.3rem; }
     .btn-refresh { background: var(--accent-color); border: none; font-weight: 600; padding: 0.6rem 1.2rem; border-radius: 6px; color: #fff; }
+    .btn-move { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); font-weight: bold; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+    .btn-move:hover { background: var(--accent-color); }
     .btn-validate { background: var(--success-color); border: none; font-weight: 600; color: #fff; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
     .btn-reject { background: var(--danger-color); border: none; font-weight: 600; color: #fff; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
   </style>
@@ -107,11 +109,12 @@
     </div>
     <button class="btn-save" style="padding:0.6rem 1rem;" onclick="addCatalogItem()">➕ Publier la formule sur le site</button>
 
-    <h4 style="margin-top:1.5rem;">📋 Catalogue Actuel</h4>
+    <h4 style="margin-top:1.5rem;">📋 Catalogue Actuel (Réorganisation)</h4>
     <div style="overflow-x:auto;">
       <table>
         <thead>
           <tr>
+            <th>Ordre</th>
             <th>Titre</th>
             <th>Prix</th>
             <th>Catégorie</th>
@@ -220,13 +223,17 @@
       }, 0);
       document.getElementById('statRevenue').innerText = rev + ' €';
 
-      // Table Catalogue
+      // Table Catalogue avec Boutons Monter / Baisser
       const catTable = document.getElementById('adminCatalogTable');
       if (catalog.length === 0) {
-        catTable.innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);">Aucune formule dans le catalogue.</td></tr>`;
+        catTable.innerHTML = `<tr><td colspan="6" style="color:var(--text-muted);">Aucune formule dans le catalogue.</td></tr>`;
       } else {
         catTable.innerHTML = catalog.map((item, idx) => `
           <tr>
+            <td>
+              <button class="btn-move" onclick="moveCatalogItem(${idx}, -1)">⬆️ Monter</button>
+              <button class="btn-move" onclick="moveCatalogItem(${idx}, 1)">⬇️ Descendre</button>
+            </td>
             <td><strong>${item.title}</strong></td>
             <td>${item.price} €</td>
             <td>${item.category}</td>
@@ -331,6 +338,22 @@
           `;
         }).join('');
       }
+    }
+
+    // Nouvelle Fonction : Monter / Baisser la position d'une formule
+    function moveCatalogItem(index, direction) {
+      let catalog = JSON.parse(localStorage.getItem('overkoro_catalog_db')) || [];
+      const targetIndex = index + direction;
+
+      if (targetIndex < 0 || targetIndex >= catalog.length) return; // Limites du tableau
+
+      // Échange des éléments dans le tableau
+      const temp = catalog[index];
+      catalog[index] = catalog[targetIndex];
+      catalog[targetIndex] = temp;
+
+      localStorage.setItem('overkoro_catalog_db', JSON.stringify(catalog));
+      loadAdminData();
     }
 
     function addCatalogItem() {
