@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">Overkoro — Portfolio, Fidélité & Espace Client</title>
+  <meta name="description" content="Overkoro — montage vidéo (Shorts, VOD, clips) : portfolio, formules, devis interactif et carte de fidélité.">
+  <meta name="theme-color" content="#6366f1">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+  <style>
+    :root {
+      --bg-color: #0d0f12;
+      --card-bg: #161920;
+      --card-bg-hover: #1f242e;
+      --accent-color: #6366f1;
+      --accent-hover: #4f46e5;
+      --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7);
+      --god-gradient: linear-gradient(135deg, #f59e0b, #ef4444, #a855f7);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #262b36;
+      --success-color: #22c55e;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --revolut-color: #0075eb;
+    }
+
+    body.light-mode {
+      --bg-color: #f3f4f6;
+      --card-bg: #ffffff;
+      --card-bg-hover: #f9fafb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+    }
+
+    body.theme-cyan { --accent-color: #06b6d4; --accent-hover: #0891b2; --accent-gradient: linear-gradient(135deg, #06b6d4, #3b82f6); }
+    body.theme-emerald { --accent-color: #10b981; --accent-hover: #059669; --accent-gradient: linear-gradient(135deg, #10b981, #14b8a6); }
+    body.theme-gold { --accent-color: #f59e0b; --accent-hover: #d97706; --accent-gradient: linear-gradient(135deg, #f59e0b, #ef4444); }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; scroll-behavior: smooth; }
+    body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; transition: background-color 0.3s, color 0.3s; }
+
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 8%; border-bottom: 1px solid var(--border-color);
+      background: var(--card-bg); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); flex-wrap: wrap; gap: 1rem;
+    }
+
+    .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; }
+    .logo span { color: var(--accent-color); }
+
+    nav { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .nav-tab {
+      background: transparent; color: var(--text-muted); border: none; padding: 0.5rem 0.8rem;
+      font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 6px; transition: all 0.2s;
+    }
+    .nav-tab:hover { color: var(--text-main); }
+    .nav-tab.active { color: var(--text-main); background: var(--card-bg-hover); border: 1px solid var(--border-color); }
+
+    .availability-badge {
+      font-size: 0.8rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 50px; background: rgba(34, 197, 94, 0.15); color: var(--success-color); border: 1px solid var(--success-color);
+    }
+    .availability-badge.busy { background: rgba(239, 68, 68, 0.15); color: var(--danger-color); border-color: var(--danger-color); }
+
+    .theme-picker select {
+      background: var(--card-bg-hover); color: var(--text-main); border: 1px solid var(--border-color);
+      padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer;
+    }
+
+    .btn { padding: 0.7rem 1.4rem; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+    .btn-primary { background: var(--accent-color); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary { background: var(--card-bg-hover); color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-download { background: var(--success-color); color: #fff; font-size: 0.85rem; padding: 0.5rem 1rem; margin-top: 0.6rem; }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    section { padding: 3rem 8%; max-width: 1200px; margin: 0 auto; }
+    h2 { text-align: center; font-size: 2rem; margin-bottom: 2rem; }
+    h3 { margin-bottom: 1rem; font-size: 1.2rem; }
+
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .price-card {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+      padding: 2rem 1.5rem; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .price-card.featured { border-color: var(--accent-color); }
+    .price-card.god-tier { border-color: #f59e0b; box-shadow: 0 0 25px rgba(245,158,11,0.25); }
+    
+    .price-tag {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--accent-gradient); color: #fff; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.8rem; border-radius: 50px;
+      white-space: nowrap;
+    }
+    .price-tag.god-tag { background: var(--god-gradient); }
+
+    .price-amount { font-size: 2.2rem; font-weight: 800; margin: 0.8rem 0; }
+    .price-amount span { font-size: 0.85rem; color: var(--text-muted); font-weight: 400; }
+
+    .price-features { list-style: none; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; text-align: left; }
+    .price-features li { margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .price-features li::before { content: "✓"; color: var(--success-color); font-weight: bold; }
+
+    .payment-policy-notice {
+      background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning-color);
+      border-radius: 12px; padding: 1.2rem; margin-bottom: 2rem; text-align: center; font-size: 0.9rem; color: var(--text-main);
+    }
+
+    .cat-tabs { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+    .cat-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+    .cat-btn.active { background: var(--accent-color); color: #fff; }
+    .cat-content { display: none; }
+    .cat-content.active { display: block; }
+
+    .auth-box, .dashboard-box {
+      background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 2.5rem; max-width: 850px; margin: 2rem auto;
+    }
+    .form-group { margin-bottom: 1.2rem; text-align: left; }
+    .form-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.7rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-size: 0.95rem;
+    }
+
+    /* Carte de Fidélité BETA 1.5 */
+    .loyalty-card {
+      background: linear-gradient(135deg, #1f1f23 0%, #0d0f12 100%);
+      border: 1px solid rgba(255,255,255,0.25);
+      box-shadow: 0 0 25px rgba(99,102,241,0.15);
+      border-radius: 16px; padding: 2rem; margin-bottom: 2rem; position: relative; overflow: hidden;
+    }
+    .loyalty-badge-grade { background: var(--accent-gradient); color: #fff; padding: 0.25rem 0.8rem; border-radius: 50px; font-weight: 700; font-size: 0.8rem; }
+    .loyalty-pts { font-size: 2.8rem; font-weight: 800; margin: 0.8rem 0 0.2rem 0; letter-spacing: 1px; color: var(--text-main); }
+
+    .order-card {
+      background: var(--card-bg-hover); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.2rem; margin-bottom: 1.5rem;
+    }
+    .status-badge { display: inline-block; padding: 0.25rem 0.7rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; }
+    .status-Reçue { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+    .status-En-attente-justificatif { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .status-En-cours { background: rgba(37, 99, 235, 0.2); color: #3b82f6; }
+    .status-Terminée { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .status-Refusée { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+    .chat-box {
+      background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px;
+      padding: 1rem; margin-top: 1rem; max-height: 200px; overflow-y: auto; font-size: 0.85rem;
+    }
+    .msg { margin-bottom: 0.5rem; padding: 0.4rem 0.8rem; border-radius: 6px; width: fit-content; max-width: 80%; }
+    .msg.client { background: rgba(99,102,241,0.2); color: var(--text-main); margin-left: auto; text-align: right; }
+    .msg.admin { background: rgba(34,197,94,0.2); color: var(--text-main); }
+
+    .calc-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 2rem; max-width: 850px; margin: 2rem auto; }
+    .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .calc-option-card {
+      background: var(--card-bg-hover); border: 2px solid var(--border-color); border-radius: 10px; padding: 1.2rem; text-align: center; cursor: pointer; transition: all 0.2s;
+    }
+    .calc-option-card.selected { border-color: var(--accent-color); background: rgba(99,102,241,0.1); }
+
+    .payment-links-box {
+      background: var(--card-bg-hover); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .payment-btn-revolut { background: var(--revolut-color); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; text-decoration: none; padding: 0.8rem; border-radius: 8px; transition: opacity 0.2s; }
+    .payment-btn-revolut:hover { opacity: 0.9; }
+
+    .patchnote-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.2rem; }
+
+    footer { text-align: center; padding: 2rem; color: var(--text-muted); border-top: 1px solid var(--border-color); font-size: 0.85rem; }
+    .toast-wrap{position:fixed;bottom:1.2rem;right:1.2rem;display:flex;flex-direction:column;gap:.5rem;z-index:999}
+    .toast{background:var(--card-bg);color:var(--text-main);border:1px solid var(--accent-color);padding:.7rem 1rem;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.35);max-width:320px;font-size:.9rem}
+    .video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.2rem}
+    .video-card{background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;overflow:hidden}
+    .video-card h4{padding:.8rem 1rem}
+    .video-thumb{position:relative;display:block;width:100%;aspect-ratio:16/9;border:0;background:#000 center/cover;cursor:pointer}
+    .video-thumb::after{content:"▶";position:absolute;inset:0;display:grid;place-items:center;font-size:2.5rem;color:#fff;text-shadow:0 2px 12px #000}
+    .video-card iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+    details.faq{background:var(--card-bg);border:1px solid var(--border-color);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.7rem;text-align:left}
+    details.faq summary{cursor:pointer;font-weight:600}
+    details.faq p{color:var(--text-muted);margin-top:.6rem;font-size:.9rem}
+  
+    .okp{display:flex;gap:4px;margin:.6rem 0}.okp span{flex:1;text-align:center;font-size:.72rem;padding:.25rem;border-radius:6px;background:var(--border-color);color:var(--text-muted)}.okp .on{background:var(--accent-gradient);color:#fff;font-weight:700}
+    @media (prefers-reduced-motion:no-preference){.order-card{animation:okin .3s ease}@keyframes okin{from{opacity:0;transform:translateY(6px)}}}
+  
+    .okb{background:var(--card-bg-hover);border:1px solid var(--border-color);border-radius:12px;padding:1rem;margin:1rem auto;max-width:680px}
+    .okwm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:rgba(255,255,255,.35);transform:rotate(-20deg);pointer-events:none;text-shadow:0 0 6px #0008}
+  </style>
+</head>
+<body>
+  <div id="okOffer" style="display:none;text-align:center;padding:.5rem;background:var(--accent-gradient);color:#fff;font-weight:700"></div>
+
+  <header>
+    <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+      <div class="logo">OVERKORO<span>.</span></div>
+      <div id="headerAvailability" class="availability-badge">🟢 Créneaux disponibles</div>
+    </div>
+    <!-- Navigation dynamique -->
+    <nav id="dynamicNavbar">
+      <button class="nav-tab active" onclick="switchPage('home')">Accueil</button>
+      <button class="nav-tab" onclick="switchPage('offres')">Formules & Passes</button>
+      <button class="nav-tab" onclick="switchPage('calculator')">🧮 Devis Interactif</button>
+      <button class="nav-tab" onclick="switchPage('patchnotes')">📋 Patch Notes</button>
+      <button class="nav-tab" onclick="switchPage('contactDirect')">💬 Contact Direct</button>
+      <button class="nav-tab" onclick="switchPage('account')" id="accountTabNav">Espace Client</button>
+      <button class="nav-tab" id="okLangBtn" onclick="okLang()">🇬🇧 EN</button>
+
+      <button class="nav-tab" onclick="toggleLightMode()" id="lightModeBtn">🌙 Sombre</button>
+
+      <div class="theme-picker">
+        <select id="themeSelector" onchange="changeTheme(this.value)">
+          <option value="default">💜 Violet</option>
+          <option value="cyan">🩵 Cyan</option>
+          <option value="emerald">💚 Émeraude</option>
+          <option value="gold">💛 Or</option>
+        </select>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ACCUEIL -->
+    <div id="page-home" class="page-section active">
+      <section style="text-align: center; padding: 4rem 8%;">
+        <h1 style="font-size: 2.8rem; margin-bottom: 1rem;">Overkoro — Portfolio & Espace Client</h1>
+        <p style="color:var(--text-muted); margin-bottom: 2rem;">Cuts rythmés, sous-titres animés et sound design sous Premiere Pro & After Effects.</p>
+        <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-bottom: 2.5rem;">
+          <button class="btn btn-primary" onclick="switchPage('offres')">Voir les formules</button>
+          <button class="btn btn-secondary" onclick="switchPage('calculator')">Simulateur de Devis Visuel</button>
+        </div>
+
+        <div id="okHome"></div>
+        <!-- Réseaux Sociaux -->
+        <div style="display:flex; gap:1rem; justify-content:center; align-items:center; flex-wrap:wrap;">
+          <a href="https://twitch.tv/seoverkoro" target="_blank" class="btn btn-secondary">📺 Twitch (seoverkoro)</a>
+          <a href="https://youtube.com/@overkoro" target="_blank" class="btn btn-secondary">▶️ YouTube (@overkoro)</a>
+          <button class="btn btn-secondary" onclick="navigator.clipboard.writeText('overkoro'); alert('Pseudo Discord copié : overkoro');">💬 Discord (overkoro)</button>
+        </div>
+      </section>
+
+      <section style="max-width:800px;padding-top:0;">
+        <h2>❓ Questions fréquentes</h2>
+        <details class="faq"><summary>Comment se passe le paiement ?</summary><p>Le règlement se fait avant l'envoi du fichier final, via le lien Revolut de ton espace client. Clique ensuite sur « J'ai payé » pour me prévenir.</p></details>
+        <details class="faq"><summary>Quels sont les délais ?</summary><p>Environ 24 à 48h pour un Short. Pour les vidéos longues et les gros volumes, le devis interactif te donne une estimation.</p></details>
+        <details class="faq"><summary>Combien de retouches ai-je ?</summary><p>2 retouches incluses par commande, illimitées avec le grade Ultra VIP et le Pass Dieu.</p></details>
+        <details class="faq"><summary>Comment fonctionne la fidélité ?</summary><p>Tu gagnes des points dès que ton paiement est validé, puis tu les échanges contre des avantages dans ton espace client.</p></details>
+      </section>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div id="page-portfolio" class="page-section">
+      <section>
+        <h2>🎬 Portfolio</h2>
+        <div class="video-grid" id="portfolioGrid"></div>
+      </section>
+    </div>
+
+    <!-- CALCULATEUR -->
+    <div id="page-calculator" class="page-section">
+      <section>
+        <h2>🎛️ Simulateur de Devis Interactif</h2>
+        <div class="calc-box">
+          <h3 style="margin-bottom:1rem;">Étape 1 : Choisissez votre format principal</h3>
+          <div class="step-grid">
+            <div class="calc-option-card selected" id="optFormatShort" onclick="selectFormat('short')">
+              <h4>Short / TikTok</h4>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">5 € / unité</p>
+            </div>
+            <div class="calc-option-card" id="optFormatLong" onclick="selectFormat('long')">
+              <h4>Vidéo Longue</h4>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">15 € / unité</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top:1.5rem;">
+            <label id="quantityLabel">Nombre de Shorts souhaités :</label>
+            <input type="number" id="calcQuantity" min="1" value="1" oninput="calculateVisualDevis()">
+          </div>
+
+          <h3 style="margin:1.5rem 0 1rem 0;">Étape 2 : Options & Suppléments</h3>
+          <div style="display:flex; gap:1rem; flex-direction:column;">
+            <label style="font-weight:normal; font-size:0.9rem; cursor:pointer;"><input type="checkbox" id="calcMiniature" onchange="calculateVisualDevis()"> Ajouter une Miniature YouTube Pro (+4€)</label>
+            <label style="font-weight:normal; font-size:0.9rem; cursor:pointer;"><input type="checkbox" id="calcEdu" onchange="calculateVisualDevis()"> Statut Étudiant / Édu (-40% sur le total)</label>
+          </div>
+
+          <div style="background:var(--card-bg-hover); padding:1.5rem; border-radius:12px; text-align:center; margin-top:2rem;">
+            <p style="font-size:0.9rem; color:var(--text-muted);">Estimation instantanée du projet :</p>
+            <h3 id="calcTotal" style="font-size:2.8rem; color:var(--accent-color); margin:0.4rem 0;">5.00 €</h3>
+            <p id="calcDelay" style="font-size:0.85rem; color:var(--text-muted);">Délai de livraison estimé : 24 à 48h</p>
+            <button class="btn btn-primary" style="margin-top:1rem;" onclick="orderFromCalculator()">Commander cette configuration</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- FORMULES DYNAMIQUES -->
+    <div id="page-offres" class="page-section">
+      <section>
+        <h2>Toutes les Formules & Passes</h2>
+        
+        <div class="payment-policy-notice">
+          <p>⚠️ <strong>Règle importante :</strong> Les paiements doivent impérativement être effectués avant l'envoi du lien de téléchargement final. Aucun fichier ne sera transmis sans règlement préalable.</p>
+        </div>
+
+        <div class="cat-tabs">
+          <button class="cat-btn active" onclick="switchCategory('particuliers')">👤 Particuliers & Créateurs</button>
+          <button class="cat-btn" onclick="switchCategory('etudiants')">🎓 Étudiants & Écoles (-40%)</button>
+          <button class="cat-btn" onclick="switchCategory('business')">💼 Business & Entreprises</button>
+        </div>
+
+        <div id="cat-particuliers" class="cat-content active">
+          <h3>Prestations Unitaires & Passes</h3>
+          <div class="pricing-grid" id="grid-particuliers"></div>
+        </div>
+
+        <div id="cat-etudiants" class="cat-content">
+          <div class="student-notice" style="background: rgba(99, 102, 241, 0.1); border: 1px solid var(--accent-color); border-radius: 12px; padding: 1.2rem; margin-bottom: 2rem; text-align: center;">
+            <p>🎓 Remise globale ~40% (Lien de justificatif scolaire requis : Drive, Imgur, etc.).</p>
+          </div>
+          <div class="pricing-grid" id="grid-etudiants"></div>
+        </div>
+
+        <div id="cat-business" class="cat-content">
+          <div class="pricing-grid" id="grid-business"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PATCH NOTES -->
+    <div id="page-patchnotes" class="page-section">
+      <section style="max-width: 800px;">
+        <h2>📋 Historique des Mises à Jour (Patch Notes)</h2>
+        <div id="patchnotesContainer"></div>
+      </section>
+    </div>
+
+    <!-- MESSAGERIE DIRECTE -->
+    <div id="page-contactDirect" class="page-section">
+      <section style="max-width: 700px;">
+        <h2>💬 Messagerie Directe avec Overkoro</h2>
+        <p style="color:var(--text-muted); text-align:center; margin-bottom:2rem;">Une question avant de commander ? Envoie un message direct sans créer de commande formelle.</p>
+        
+        <div class="auth-box">
+          <div class="form-group">
+            <label>Votre Nom ou Pseudo</label>
+            <input type="text" id="directMsgSender" placeholder="Ex: Alex">
+          </div>
+          <div class="form-group">
+            <label>Sujet</label>
+            <input type="text" id="directMsgSubject" placeholder="Ex: Question sur un format de vidéo">
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea id="directMsgBody" rows="4" placeholder="Votre message..."></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="sendDirectMessage()">Envoyer le message</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ESPACE CLIENT -->
+    <div id="page-account" class="page-section">
+      <section>
+        <div id="authContainer" class="auth-box">
+          <h3 id="authTitle" style="text-align:center; margin-bottom:1.5rem;">Connexion Espace Client</h3>
+          
+          <div class="form-group">
+            <label>Adresse E-mail</label>
+            <input type="email" id="authEmail" placeholder="votre@email.com">
+          </div>
+          <div class="form-group">
+            <label>Mot de passe</label>
+            <input type="password" id="authPassword" placeholder="••••••••">
+          </div>
+
+          <div id="registerFields" style="display:none;">
+            <div class="form-group">
+              <label>Nom ou Pseudo Discord</label>
+              <input type="text" id="authName" placeholder="Ex: OverkoroFan#1234">
+            </div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%; margin-top:1rem;" id="authSubmitBtn" onclick="handleAuth()">Se connecter</button>
+          
+          <p style="text-align:center; margin-top:1.2rem; color:var(--text-muted); font-size:0.9rem;">
+            <span id="authToggleText">Pas encore de compte ?</span>
+            <a href="#" onclick="toggleAuthMode(event)" id="authToggleLink" style="color:var(--accent-color);">Créer un compte</a>
+          </p>
+        </div>
+
+        <div id="dashboardContainer" class="dashboard-box" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid var(--border-color); padding-bottom:1rem; flex-wrap:wrap; gap:1rem;">
+            <div>
+              <h3>Bienvenue, <span id="clientDisplayName" style="color:var(--accent-color);"></span></h3>
+              <p style="color:var(--text-muted); font-size:0.85rem;" id="clientDisplayEmail"></p>
+            </div>
+            <button class="btn btn-secondary" onclick="logoutClient()">Déconnexion</button>
+          </div>
+
+          <!-- CARTE DE FIDÉLITÉ -->
+          <div class="loyalty-card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.85rem; color:var(--text-muted); letter-spacing:1px; font-weight:700;">CARTE DE FIDÉLITÉ OVERKORO</span>
+              <span id="clientLoyaltyGrade" class="loyalty-badge-grade">Standard</span>
+            </div>
+            <div class="loyalty-pts" id="clientLoyaltyPts">0 PTS</div>
+            <p style="font-size:0.85rem; color:var(--text-muted);" id="clientLoyaltyRateInfo">Taux de base : 1€ = 2 pts (Standard)</p>
+          </div>
+
+          <!-- BOUTIQUE DE RÉCOMPENSES FIDÉLITÉ -->
+          <div style="background:var(--card-bg-hover); padding:1.5rem; border-radius:12px; margin-bottom:2rem; border:1px solid var(--border-color);">
+            <h4 style="margin-bottom:0.5rem;">🎁 Boutique de Récompenses Fidélité</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.2rem;">Échange tes points contre des réductions et des bonus exclusifs !</p>
+            <div id="rewardsList" style="display:flex; flex-direction:column; gap:0.8rem;"></div>
+          </div>
+
+          <!-- UTILISATION DE COUPONS DE POINTS -->
+          <div style="background:var(--card-bg-hover); padding:1.5rem; border-radius:12px; margin-bottom:2rem; border:1px solid var(--border-color);">
+            <h4 style="margin-bottom:0.8rem;">🎟️ Utiliser un Coupon de Points</h4>
+            <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+              <input type="text" id="couponInput" placeholder="Entrez votre code coupon..." style="max-width:250px; margin:0;">
+              <button class="btn btn-primary" onclick="redeemCoupon()">Activer le coupon</button>
+            </div>
+          </div>
+
+          <div id="clientPassBanner" style="background:rgba(99,102,241,0.1); border:1px solid var(--accent-color); border-radius:10px; padding:1rem; margin-bottom:1.5rem; display:none;">
+            <p style="font-size:0.9rem;">⭐ Pass / Abonnement Actif : <strong id="clientActivePassName" style="color:var(--accent-color);">Aucun</strong></p>
+          </div>
+
+          <div class="payment-links-box">
+            <h4 style="margin-bottom:0.8rem;">💳 Effectuer un Paiement Sécurisé</h4>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.2rem;">Réglez votre commande au montant exact via notre lien officiel :</p>
+            <a href="https://revolut.me/mathie_fg_btpf" target="_blank" class="payment-btn-revolut">
+              💳 Payer par Carte (Revolut - Tous réseaux acceptés)
+            </a><div id="okPay" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem"></div>
+          </div>
+
+          <div style="background:var(--card-bg-hover); padding:1.5rem; border-radius:12px; margin-bottom:2rem;">
+            <h4 style="margin-bottom:1rem;">📦 Passer une nouvelle commande</h4>
+            <div class="form-group">
+              <label>Formule / Pass choisi</label>
+              <select id="newOrderPlan" onchange="checkIfEduOrder()"></select>
+            </div>
+
+            <div class="form-group">
+              <label>Lien des Rushes (Google Drive, WeTransfer...)</label>
+              <input type="url" id="newOrderLink" placeholder="https://drive.google.com/...">
+            </div>
+
+            <div class="form-group">
+              <label>Code Promo (Optionnel)</label>
+              <input type="text" id="promoCodeInput" placeholder="Ex: FIRST10 ou OVERKORO" oninput="okPricePreview()"><div id="okPrice" style="margin-top:.4rem;font-weight:700"></div><label style="display:block;margin:.5rem 0"><input type="checkbox" id="okExpress" onchange="okPricePreview()"> ⚡ Livraison express 24h (+30 %)</label><div id="okUpsell" style="color:var(--accent-color);font-size:.85rem"></div>
+            </div>
+
+            <div class="form-group">
+              <label>🎁 Utiliser un avantage fidélité</label>
+              <select id="rewardSelect"></select>
+            </div>
+
+            <div class="form-group" id="eduFileGroup" style="display:none; background:rgba(99,102,241,0.05); border:1px dashed var(--accent-color); padding:1rem; border-radius:8px;">
+              <label style="color:var(--accent-color);">🎓 Lien du Justificatif Scolaire (Google Drive, Imgur, etc.)</label>
+              <input type="url" id="eduFileInput" placeholder="https://..." style="margin-top:0.4rem;">
+            </div>
+
+            <button class="btn btn-primary" onclick="submitClientOrder()">Valider la commande</button>
+          </div>
+
+          <h4>📋 Suivi de vos projets & Historique des commandes</h4>
+          <div id="okRef"></div><div id="clientOrdersList" style="margin-top:1rem;"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 Overkoro — Tous droits réservés.</p>
+  </footer>
+
+  <script>
+    /* ===== OVERKORO CORE : base en ligne (Supabase), hash, notifications ===== */
+    const OK = { SUPABASE_URL: '', SUPABASE_KEY: '', DISCORD_WEBHOOK: '', PAYPAL: '', IBAN: '', EMAIL: 'overkoro.pro@gmail.com' }; // ← à remplir (voir SETUP.md)
+    const okSha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('overkoro|' + s)))].map(b => b.toString(16).padStart(2, '0')).join('');
+    const okNotify = t => {
+      if (OK.DISCORD_WEBHOOK) fetch(OK.DISCORD_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: t }) }).catch(() => {});
+      if (OK.EMAIL) okMail(t).then(r => { if (!r.ok) console.warn('E-mail Overkoro non envoyé :', r.msg); });
+    };
+    const okMail = t => fetch('https://formsubmit.co/ajax/' + OK.EMAIL, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ _subject: 'Overkoro — ' + t.slice(0, 60), message: t, _template: 'box', _captcha: 'false' }) })
+      .then(r => r.json()).then(j => ({ ok: j.success === true || j.success === 'true', msg: j.message || '' }))
+      .catch(e => ({ ok: false, msg: location.protocol === 'file:' ? "La page est ouverte depuis un fichier local : l'envoi ne marche que depuis le site hébergé en https." : 'Requête bloquée (' + e.message + ') — bloqueur de pub ou site non hébergé ?' }));
+    (() => {
+      const on = OK.SUPABASE_URL && OK.SUPABASE_KEY, raw = Storage.prototype.setItem;
+      const H = { apikey: OK.SUPABASE_KEY, Authorization: 'Bearer ' + OK.SUPABASE_KEY, 'Content-Type': 'application/json' };
+      const sk = k => /^overkoro_(.+_db|availability_status)$/.test(k);
+      const push = (k, v) => fetch(OK.SUPABASE_URL + '/rest/v1/kv', { method: 'POST', headers: { ...H, Prefer: 'resolution=merge-duplicates' }, body: JSON.stringify({ key: k, value: v }) }).catch(() => {});
+      Storage.prototype.setItem = function (k, v) { raw.call(this, k, v); if (on && this === localStorage && sk(k)) push(k, String(v)); };
+      if (!on) return;
+      async function pull() {
+        try {
+          const rows = await (await fetch(OK.SUPABASE_URL + '/rest/v1/kv?select=key,value', { headers: H })).json();
+          if (!Array.isArray(rows)) return;
+          let ch = false; const have = new Set(rows.map(r => r.key));
+          rows.forEach(({ key, value }) => { if (localStorage.getItem(key) !== value) { raw.call(localStorage, key, value); ch = true; } });
+          Object.keys(localStorage).filter(k => sk(k) && !have.has(k)).forEach(k => push(k, localStorage.getItem(k)));
+          if (ch) window.dispatchEvent(new Event('ok-sync'));
+        } catch (e) {}
+      }
+      pull(); setInterval(pull, 15000);
+    })();
+    let isRegisterMode = false;
+    let currentUser = JSON.parse(localStorage.getItem('overkoro_current_user')) || null;
+    let currentCalcFormat = 'short';
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const safeUrl = u => /^https?:\/\//i.test(u) ? u : '#';
+    window.alert = msg => {
+      let w = document.querySelector('.toast-wrap');
+      if (!w) { w = document.createElement('div'); w.className = 'toast-wrap'; document.body.appendChild(w); }
+      const t = document.createElement('div');
+      t.className = 'toast'; t.textContent = msg; w.appendChild(t);
+      setTimeout(() => t.remove(), 4500);
+    };
+
+    function ensureCustomPage(id) {
+      if (document.getElementById('page-' + id)) return;
+      const tab = (JSON.parse(localStorage.getItem('overkoro_tabs_db')) || []).find(t => t.id === id);
+      const d = document.createElement('div');
+      d.id = 'page-' + id; d.className = 'page-section';
+      d.innerHTML = `<section style="max-width:800px"><h2>${esc(tab ? tab.label : id)}</h2><div style="white-space:pre-wrap;color:var(--text-muted)">${esc(tab && tab.content ? tab.content : 'Cette page arrive bientôt.')}</div></section>`;
+      document.querySelector('main').appendChild(d);
+    }
+
+    function renderPortfolio() {
+      const items = JSON.parse(localStorage.getItem('overkoro_portfolio_db')) || [];
+      document.getElementById('portfolioGrid').innerHTML = items.length ? items.map(v => {
+        const yt = String(v.yt).replace(/[^\w-]/g, '');
+        return `<div class="video-card"><button class="video-thumb" style="background-image:url('https://i.ytimg.com/vi/${yt}/hqdefault.jpg')" onclick="playVideo(this,'${yt}')" aria-label="Lire la vidéo"></button><h4>${esc(v.title)}</h4></div>`;
+      }).join('') : '<p style="color:var(--text-muted);text-align:center;grid-column:1/-1">Les réalisations arrivent bientôt 🎬</p>';
+    }
+
+    function playVideo(btn, id) {
+      btn.outerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
+    }
+
+    function renderRewardSelect() {
+      const s = document.getElementById('rewardSelect');
+      if (!s || !currentUser) return;
+      s.innerHTML = '<option value="">Aucun</option>' + (currentUser.rewards || []).filter(r => !r.used).map(r => `<option value="${r.rid}">${esc(r.title)}</option>`).join('');
+    }
+
+    const defaultCatalog = [
+      { id: 1, title: '1 Short / TikTok', price: 5, category: 'particuliers', features: ['Durée jusqu\'à 60s', 'Sous-titres animés & Zooms'], badge: '', isGod: false },
+      { id: 2, title: 'Pack 5 Shorts', price: 20, category: 'particuliers', features: ['5 Shorts / TikToks', '4€ au lieu de 5€ / unité'], badge: '1 Short Offert', isGod: false },
+      { id: 3, title: '1 Vidéo Longue', price: 15, category: 'particuliers', features: ['Format YouTube / VOD', 'Cut & Dérushage dynamique'], badge: '', isGod: false },
+      { id: 4, title: 'Pack 5 Vidéos Longues', price: 65, category: 'particuliers', features: ['5 Vidéos Longues / VOD', '13€ au lieu de 15€ / unité'], badge: '', isGod: false },
+      { id: 5, title: 'Pass Streamer / VOD', price: 45, category: 'particuliers', features: ['8 Shorts / mois tirés de VODs', 'Intégration facecam & sous-titres'], badge: 'Spécial Twitch', isGod: false },
+      { id: 6, title: 'Pass Shorts Express', price: 110, category: 'particuliers', features: ['30 Shorts par mois (1/jour)', 'Livraison ultra-prioritaire'], badge: 'Volume Intensif', isGod: false },
+      { id: 7, title: 'Clip Musical / AMV / Gaming', price: 25, category: 'particuliers', features: ['Synchro parfaite sur le beat', 'Effets After Effects avancés (VFX)'], badge: '', isGod: false },
+      { id: 8, title: 'Coaching & Audit Montage', price: 15, category: 'particuliers', features: ['Analyse détaillée de votre montage', 'Conseils rétention & rythme'], badge: '', isGod: false },
+      { id: 9, title: 'Pass Starter', price: 30, category: 'particuliers', features: ['5 Shorts + 1 Vidéo Longue', 'Idéal pour démarrer'], badge: '', isGod: false },
+      { id: 10, title: 'Pass Pro', price: 80, category: 'particuliers', features: ['15 Shorts + 3 Vidéos Longues', 'Suivi prioritaire'], badge: 'Populaire', isGod: false },
+      { id: 11, title: 'Pass Ultra VIP', price: 140, category: 'particuliers', features: ['25 Shorts + 6 Vidéos Longues', 'Accompagnement éditorial'], badge: '', isGod: false },
+      { id: 12, title: 'Pass Dieu', price: 250, category: 'particuliers', features: ['40 Shorts + 10 Vidéos Longues', 'Retouches illimitées'], badge: 'GOD MODE', isGod: true },
+      { id: 13, title: '1 Short (Édu)', price: 3, category: 'etudiants', features: ['Sous-titres animés', 'Sound design & Zooms'], badge: '', isGod: false },
+      { id: 14, title: 'Pack 5 Shorts (Édu)', price: 15, category: 'etudiants', features: ['5 Shorts / TikToks', '3€ au lieu de 5€ / unité'], badge: 'Remise Shorts', isGod: false },
+      { id: 15, title: '1 Vidéo Longue (Édu)', price: 10, category: 'etudiants', features: ['Format YouTube / Exposé', 'Cut & Dérushage propre'], badge: '', isGod: false },
+      { id: 16, title: 'Pack 5 Vidéos (Édu)', price: 40, category: 'etudiants', features: ['5 Vidéos Longues / Exposés', '8€ au lieu de 15€ / unité'], badge: '', isGod: false },
+      { id: 17, title: 'Pass Starter (Édu)', price: 18, category: 'etudiants', features: ['5 Shorts + 1 Vidéo Longue', 'Tarif étudiant spécial'], badge: '', isGod: false },
+      { id: 18, title: 'Pass Pro (Édu)', price: 50, category: 'etudiants', features: ['15 Shorts + 3 Vidéos Longues', 'Suivi prioritaire étudiant'], badge: 'Populaire Édu', isGod: false },
+      { id: 19, title: 'Pass Ultra VIP (Édu)', price: 85, category: 'etudiants', features: ['25 Shorts + 6 Vidéos Longues', 'Accompagnement complet'], badge: '', isGod: false },
+      { id: 20, title: 'Pass Dieu (Édu)', price: 150, category: 'etudiants', features: ['40 Shorts + 10 Vidéos YouTube', 'Retouches illimitées'], badge: 'ÉDU GOD MODE', isGod: true },
+      { id: 21, title: 'Short Pro / Publicité', price: 15, category: 'business', features: ['Format vertical 9:16 sponsorisé', 'Hooks captivants'], badge: '', isGod: false },
+      { id: 22, title: 'Vidéo Corporate / Marque', price: 45, category: 'business', features: ['Présentation entreprise / produit', 'Habillage graphique pro'], badge: 'Corporate', isGod: false }
+    ];
+
+    // Paliers de récompenses fidélité
+    const loyaltyRewards = [
+      { id: 1, cost: 100, title: 'Réduction de 5 €', type: 'discount' },
+      { id: 2, cost: 250, title: '1 Short / TikTok Offert', type: 'free_short' },
+      { id: 3, cost: 500, title: 'Passage au Grade VIP', type: 'upgrade_vip' }
+    ];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderDynamicTabs();
+      renderPortfolio();
+      const savedTheme = localStorage.getItem('overkoro_theme') || 'default';
+      const savedMode = localStorage.getItem('overkoro_lightmode') || (matchMedia('(prefers-color-scheme: light)').matches ? 'true' : 'false');
+      if (savedMode === 'true') {
+        document.body.classList.add('light-mode');
+        document.getElementById('lightModeBtn').innerText = "☀️ Clair";
+      }
+      if (savedTheme !== 'default') {
+        document.body.classList.add('theme-' + savedTheme);
+        document.getElementById('themeSelector').value = savedTheme;
+      }
+      loadHeaderAvailability();
+      renderCatalogUI();
+      
+      renderPatchnotes();
+      calculateVisualDevis();
+      checkForUnreadAdminMessages();
+    });
+
+    function calculateLoyaltyPoints(euroAmount, grade = 'Standard') {
+      let baseRate = 2; 
+      let bonusPerTranche = 0;
+
+      if (grade === 'VIP') {
+        baseRate = 2.5;
+        bonusPerTranche = Math.floor(euroAmount / 10) * 5; 
+      } else if (grade === 'Ultra VIP' || grade === 'GOD') {
+        baseRate = 3;
+        bonusPerTranche = Math.floor(euroAmount / 10) * 10; 
+      }
+
+      return Math.round((euroAmount * baseRate) + bonusPerTranche);
+    }
+
+    function renderDynamicTabs() {
+      let tabs = JSON.parse(localStorage.getItem('overkoro_tabs_db'));
+      if (!tabs) {
+        tabs = [
+          { id: 'home', label: 'Accueil' },
+          { id: 'offres', label: 'Formules & Passes' },
+          { id: 'calculator', label: '🧮 Devis Interactif' },
+          { id: 'patchnotes', label: '📋 Patch Notes' },
+          { id: 'contactDirect', label: '💬 Contact Direct' },
+          { id: 'account', label: 'Espace Client' }
+        ];
+        localStorage.setItem('overkoro_tabs_db', JSON.stringify(tabs));
+      }
+
+      if (!localStorage.getItem('overkoro_portfolio_tab') && !tabs.some(t => t.id === 'portfolio')) {
+        tabs.splice(1, 0, { id: 'portfolio', label: '🎬 Portfolio' });
+        localStorage.setItem('overkoro_tabs_db', JSON.stringify(tabs));
+      }
+      localStorage.setItem('overkoro_portfolio_tab', '1');
+
+      const nav = document.getElementById('dynamicNavbar');
+      nav.innerHTML = tabs.map(t => `
+        <button class="nav-tab ${t.id === 'home' ? 'active' : ''}" data-page="${esc(t.id)}" onclick="switchPage(this.dataset.page)">${esc(t.label)}</button>
+      `).join('') + `
+        <button class="nav-tab" onclick="toggleLightMode()" id="lightModeBtn">🌙 Sombre</button>
+        <div class="theme-picker">
+          <select id="themeSelector" onchange="changeTheme(this.value)">
+            <option value="default">💜 Violet</option>
+            <option value="cyan">🩵 Cyan</option>
+            <option value="emerald">💚 Émeraude</option>
+            <option value="gold">💛 Or</option>
+          </select>
+        </div>
+      `;
+    }
+
+    function renderPatchnotes() {
+      let patches = JSON.parse(localStorage.getItem('overkoro_patchnotes_db'));
+      if (!patches) {
+        patches = [
+          {
+            version: 'BETA 1.5',
+            date: '2026',
+            title: 'Mise à jour Cartes de Fidélité & Boutique de Récompenses',
+            changes: [
+              'Système de points de fidélité avec multiplicateurs par grade et tranches.',
+              'Boutique de récompenses pour échanger ses points contre des avantages.',
+              'Activation des coupons de points et gestion dynamique.'
+            ]
+          }
+        ];
+        localStorage.setItem('overkoro_patchnotes_db', JSON.stringify(patches));
+      }
+
+      const container = document.getElementById('patchnotesContainer');
+      container.innerHTML = patches.map(p => `
+        <div class="patchnote-card">
+          <h3 style="color: var(--accent-color);">${p.version} — ${p.title}</h3>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.8rem;">Publié le : ${p.date}</p>
+          <ul style="color: var(--text-muted); font-size: 0.9rem; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;">
+            ${(p.changes || []).map(c => `<li>${c}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+
+    function sendDirectMessage() {
+      const sender = document.getElementById('directMsgSender').value.trim();
+      const subject = document.getElementById('directMsgSubject').value.trim();
+      const body = document.getElementById('directMsgBody').value.trim();
+
+      if (!sender || !subject || !body) return alert("Veuillez remplir tous les champs du message !");
+
+      let messages = JSON.parse(localStorage.getItem('overkoro_direct_msgs_db')) || [];
+      messages.unshift({
+        id: Date.now(),
+        sender,
+        subject,
+        body,
+        date: new Date().toLocaleString('fr-FR'),
+        read: false
+      });
+      localStorage.setItem('overkoro_direct_msgs_db', JSON.stringify(messages));
+      okNotify(`✉️ Message de ${sender} — ${subject}`);
+      alert("Message direct envoyé à Overkoro avec succès !");
+      document.getElementById('directMsgSender').value = '';
+      document.getElementById('directMsgSubject').value = '';
+      document.getElementById('directMsgBody').value = '';
+    }
+
+    function renderRewards() {
+      const container = document.getElementById('rewardsList');
+      if (!container || !currentUser) return;
+
+      const currentPoints = currentUser.loyaltyPoints || 0;
+
+      container.innerHTML = loyaltyRewards.map(r => {
+        const canUnlock = currentPoints >= r.cost;
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-color); padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color);">
+            <div>
+              <strong>${r.title}</strong><br>
+              <small style="color:var(--text-muted);">${r.cost} Points requis</small>
+            </div>
+            <button class="btn ${canUnlock ? 'btn-primary' : 'btn-secondary'}" style="font-size:0.8rem; padding:0.4rem 0.8rem;${canUnlock ? '' : ' opacity:0.5; cursor:not-allowed;'}" ${canUnlock ? '' : 'disabled'} onclick="claimReward(${r.id})">
+              ${canUnlock ? 'Échanger' : '🔒 Bloqué'}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function claimReward(rewardId) {
+      const reward = loyaltyRewards.find(r => r.id === rewardId);
+      if (!reward || !currentUser) return;
+      if ((currentUser.loyaltyPoints || 0) < reward.cost) return alert("Tu n'as pas assez de points pour cette récompense !");
+      if (reward.type === 'upgrade_vip' && ['VIP', 'Ultra VIP', 'GOD'].includes(currentUser.loyaltyGrade)) return alert('Tu as déjà le grade VIP ou supérieur !');
+      currentUser.loyaltyPoints -= reward.cost;
+      if (reward.type === 'upgrade_vip') {
+        currentUser.loyaltyGrade = 'VIP';
+        alert('🎉 Félicitations ! Tu passes au grade VIP grâce à tes points !');
+      } else {
+        currentUser.rewards = [...(currentUser.rewards || []), { rid: Date.now(), type: reward.type, title: reward.title, used: false }];
+        alert(`🎁 « ${reward.title} » ajouté à tes avantages : sélectionne-le lors de ta prochaine commande.`);
+      }
+      saveAndSyncUser();
+      updateDashboardUI();
+    }
+
+    function redeemCoupon() {
+      const codeInput = document.getElementById('couponInput').value.trim().toUpperCase();
+      if (!codeInput) return alert("Veuillez entrer un code de coupon !");
+
+      let coupons = JSON.parse(localStorage.getItem('overkoro_coupons_db')) || [];
+      const coupon = coupons.find(c => c.code === codeInput);
+
+      if (!coupon) return alert("Code coupon invalide ou expiré !");
+
+      const cerr = okCpCheck(coupon) || ((currentUser.usedCoupons || []).includes(coupon.code) ? 'Tu as déjà utilisé ce coupon !' : '');
+      if (cerr) return alert(cerr);
+      coupon.uses = (coupon.uses || 0) + 1; (currentUser.usedCoupons = currentUser.usedCoupons || []).push(coupon.code);
+      localStorage.setItem('overkoro_coupons_db', JSON.stringify(coupons));
+      currentUser.loyaltyPoints = (currentUser.loyaltyPoints || 0) + coupon.points;
+      alert(`🎉 Coupon activé ! +${coupon.points} points ajoutés à votre carte.`);
+      document.getElementById('couponInput').value = '';
+
+      saveAndSyncUser();
+      updateDashboardUI();
+    }
+
+    function saveAndSyncUser() {
+      let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+      let idx = users.findIndex(u => u.email === currentUser.email);
+      if (idx !== -1) {
+        users[idx] = currentUser;
+        localStorage.setItem('overkoro_users_db', JSON.stringify(users));
+        localStorage.setItem('overkoro_current_user', JSON.stringify(currentUser));
+      }
+    }
+
+    function getCatalog() {
+      let catalog = JSON.parse(localStorage.getItem('overkoro_catalog_db'));
+      if (!catalog || catalog.length === 0) {
+        localStorage.setItem('overkoro_catalog_db', JSON.stringify(defaultCatalog));
+        return defaultCatalog;
+      }
+      return catalog;
+    }
+
+    function renderCatalogUI() {
+      const catalog = getCatalog();
+      const gridPart = document.getElementById('grid-particuliers');
+      const gridEdu = document.getElementById('grid-etudiants');
+      const gridBiz = document.getElementById('grid-business');
+      const selectPlan = document.getElementById('newOrderPlan');
+
+      gridPart.innerHTML = ''; gridEdu.innerHTML = ''; gridBiz.innerHTML = ''; selectPlan.innerHTML = '';
+
+      catalog.forEach(item => {
+        const fullPlanName = `${item.title} (${item.price}€)`;
+        selectPlan.add(new Option(fullPlanName, fullPlanName));
+
+        const card = document.createElement('div');
+        card.className = `price-card ${item.badge ? 'featured' : ''} ${item.isGod ? 'god-tier' : ''}`;
+        card.innerHTML = `
+          ${item.badge ? `<div class="price-tag ${item.isGod ? 'god-tag' : ''}">${esc(item.badge)}</div>` : ''}
+          <div>
+            <h3>${esc(item.title)}</h3>
+            <div class="price-amount" ${item.isGod ? 'style="color:#f59e0b;"' : ''}>${item.price} €</div>
+            <ul class="price-features">
+              ${(item.features || []).map(f => `<li>${esc(f)}</li>`).join('')}
+            </ul>
+          </div>
+          <button class="btn btn-primary" ${item.isGod ? 'style="background:var(--god-gradient);"' : ''} data-plan="${esc(fullPlanName)}" onclick="openOrderModal(this.dataset.plan)">Commander</button>
+        `;
+
+        if (item.category === 'particuliers') gridPart.appendChild(card);
+        else if (item.category === 'etudiants') gridEdu.appendChild(card);
+        else if (item.category === 'business') gridBiz.appendChild(card);
+      });
+    }
+
+    function loadHeaderAvailability() {
+      const status = localStorage.getItem('overkoro_availability_status') || 'available';
+      const badge = document.getElementById('headerAvailability');
+      if (status === 'busy') {
+        badge.className = "availability-badge busy";
+        badge.innerText = "🔴 Complet / Sur-booké";
+      } else {
+        badge.className = "availability-badge";
+        badge.innerText = "🟢 Créneaux disponibles";
+      }
+    }
+
+    function toggleLightMode() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      const btn = document.getElementById('lightModeBtn');
+      if (btn) btn.innerText = isLight ? "☀️ Clair" : "🌙 Sombre";
+      localStorage.setItem('overkoro_lightmode', isLight);
+    }
+
+    function changeTheme(theme) {
+      document.body.className = document.body.classList.contains('light-mode') ? 'light-mode' : '';
+      if (theme !== 'default') document.body.classList.add('theme-' + theme);
+      localStorage.setItem('overkoro_theme', theme);
+    }
+
+    function switchPage(pageId) {
+      okView(pageId);
+      ensureCustomPage(pageId);
+      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.page === pageId));
+      const pageEl = document.getElementById('page-' + pageId);
+      if (pageEl) pageEl.classList.add('active');
+      if (pageId === 'account') updateDashboardUI();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchCategory(catId) {
+      document.querySelectorAll('.cat-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('cat-' + catId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function selectFormat(format) {
+      currentCalcFormat = format;
+      document.getElementById('optFormatShort').classList.toggle('selected', format === 'short');
+      document.getElementById('optFormatLong').classList.toggle('selected', format === 'long');
+      document.getElementById('quantityLabel').innerText = format === 'short' ? 'Nombre de Shorts souhaités :' : 'Nombre de Vidéos Longues souhaitées :';
+      calculateVisualDevis();
+    }
+
+    function getQuote() {
+      const qty = Math.max(1, parseInt(document.getElementById('calcQuantity').value) || 1);
+      const long = currentCalcFormat === 'long';
+      const unit = long ? (qty >= 5 ? 13 : 15) : (qty >= 5 ? 4 : 5); // tarif dégressif dès 5 unités, comme les packs
+      let total = qty * unit;
+      if (document.getElementById('calcMiniature').checked) total += 4;
+      if (document.getElementById('calcEdu').checked) total *= 0.6;
+      return { qty, long, total: Math.round(total * 100) / 100 };
+    }
+
+    function calculateVisualDevis() {
+      const q = getQuote();
+      document.getElementById('calcTotal').innerText = q.total.toFixed(2) + ' €';
+      okPackHint(q);
+      const d = q.long ? 1 + Math.ceil(q.qty / 2) : Math.ceil(q.qty / 5);
+      document.getElementById('calcDelay').innerText = `Délai de livraison estimé : ${d} à ${d + 1} jour(s)`;
+    }
+
+    function orderFromCalculator() {
+      const q = getQuote();
+      const mini = document.getElementById('calcMiniature').checked ? ' + Miniature' : '';
+      const edu = document.getElementById('calcEdu').checked ? ' (Édu)' : '';
+      openOrderModal(`${q.qty} ${q.long ? 'Vidéo(s) Longue(s)' : 'Short(s) / TikTok(s)'}${mini}${edu} (${q.total}€)`);
+    }
+
+    function checkIfEduOrder() {
+      const plan = document.getElementById('newOrderPlan').value;
+      const eduGroup = document.getElementById('eduFileGroup');
+      if (plan.includes('Édu') || plan.includes('Édu GOD MODE')) {
+        eduGroup.style.display = 'block';
+      } else {
+        eduGroup.style.display = 'none';
+      }
+    }
+
+    function toggleAuthMode(e) {
+      e.preventDefault();
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('authTitle').innerText = isRegisterMode ? "Création de compte Client" : "Connexion Espace Client";
+      document.getElementById('registerFields').style.display = isRegisterMode ? "block" : "none";
+      document.getElementById('authSubmitBtn').innerText = isRegisterMode ? "S'inscrire" : "Se connecter";
+      document.getElementById('authToggleText').innerText = isRegisterMode ? "Déjà un compte ?" : "Pas encore de compte ?";
+      document.getElementById('authToggleLink').innerText = isRegisterMode ? "Se connecter" : "Créer un compte";
+    }
+
+    async function handleAuth() {
+      const email = document.getElementById('authEmail').value.trim();
+      const rawPw = document.getElementById('authPassword').value.trim();
+      const password = await okSha(rawPw);
+      let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+
+      if (!email || !rawPw) return alert("Veuillez remplir tous les champs !");
+
+      if (isRegisterMode) {
+        const name = document.getElementById('authName').value.trim() || email.split('@')[0];
+        if (users.find(u => u.email === email)) return alert("Cet e-mail est déjà associé à un compte !");
+
+        const newUser = { id: Date.now(), email, password, name, activePass: '', loyaltyGrade: 'Standard', loyaltyPoints: 0 };
+        users.push(newUser);
+        localStorage.setItem('overkoro_users_db', JSON.stringify(users));
+        currentUser = newUser;
+        localStorage.setItem('overkoro_current_user', JSON.stringify(currentUser));
+        alert("Compte créé avec succès !");
+      } else {
+        const user = users.find(u => u.email === email && (u.password === password || u.password === rawPw));
+        if (!user) return alert("E-mail ou mot de passe incorrect !");
+        if (user.password === rawPw) { user.password = password; localStorage.setItem('overkoro_users_db', JSON.stringify(users)); }
+        currentUser = user;
+        localStorage.setItem('overkoro_current_user', JSON.stringify(currentUser));
+      }
+      updateDashboardUI();
+    }
+
+    function logoutClient() {
+      currentUser = null;
+      localStorage.removeItem('overkoro_current_user');
+      updateDashboardUI();
+    }
+
+    function updateDashboardUI() {
+      if (currentUser) {
+        let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+        let freshUser = users.find(u => u.email === currentUser.email);
+        if (freshUser) currentUser = freshUser;
+
+        document.getElementById('authContainer').style.display = "none";
+        document.getElementById('dashboardContainer').style.display = "block";
+        document.getElementById('clientDisplayName').innerText = currentUser.name;
+        document.getElementById('clientDisplayEmail').innerText = currentUser.email;
+
+        const grade = currentUser.loyaltyGrade || 'Standard';
+        const points = currentUser.loyaltyPoints || 0;
+        document.getElementById('clientLoyaltyGrade').innerText = grade;
+        document.getElementById('clientLoyaltyPts').innerText = points + ' PTS';
+        
+        let rateText = 'Taux de base : 1€ = 2 pts (Standard)';
+        if (grade === 'VIP') rateText = 'Taux VIP : 1€ = 2.5 pts + 5 pts par tranche de 10€';
+        if (grade === 'Ultra VIP' || grade === 'GOD') rateText = 'Taux Ultra VIP : 1€ = 3 pts + 10 pts par tranche de 10€';
+        document.getElementById('clientLoyaltyRateInfo').innerText = rateText;
+
+        renderRewards();
+        renderRewardSelect();
+
+        const passBanner = document.getElementById('clientPassBanner');
+        if (currentUser.activePass) {
+          passBanner.style.display = "block";
+          document.getElementById('clientActivePassName').innerText = currentUser.activePass;
+        } else {
+          passBanner.style.display = "none";
+        }
+
+        checkIfEduOrder();
+        loadClientOrders();
+      } else {
+        document.getElementById('authContainer').style.display = "block";
+        document.getElementById('dashboardContainer').style.display = "none";
+      }
+    }
+
+    function openOrderModal(planName) {
+      if (!currentUser) {
+        alert("Veuillez vous connecter à votre Espace Client pour passer commande.");
+        switchPage('account');
+        return;
+      }
+      switchPage('account');
+      const select = document.getElementById('newOrderPlan');
+      let found = false;
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === planName) {
+          select.selectedIndex = i;
+          found = true;
+          break;
+        }
+      }
+      if (!found) { select.add(new Option(planName, planName)); select.value = planName; }
+      checkIfEduOrder();
+    }
+
+    function submitClientOrder() {
+      if (!currentUser) return;
+      const plan = document.getElementById('newOrderPlan').value;
+      const link = document.getElementById('newOrderLink').value.trim();
+      const promoInput = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+      const isEdu = plan.includes('Édu');
+      const eduFileInput = document.getElementById('eduFileInput');
+      const eduFileLink = eduFileInput ? eduFileInput.value.trim() : '';
+      if (link && !/^https?:\/\//i.test(link)) return alert('Le lien des rushes doit commencer par http:// ou https://');
+      if (isEdu && !/^https?:\/\//i.test(eduFileLink)) return alert('Indique un lien (http…) vers ton justificatif scolaire pour bénéficier du tarif Édu !');
+
+      const promoList = JSON.parse(localStorage.getItem('overkoro_promos_db')) || [{ code: 'FIRST10', discount: 10 }, { code: 'OVERKORO', discount: 20 }];
+      const pm = plan.match(/(\d+(?:[.,]\d+)?)\s*€/);
+      let amount = pm ? parseFloat(pm[1].replace(',', '.')) : 10;
+      if (document.getElementById('okExpress')?.checked) amount = Math.round(amount * 130) / 100;
+      const basePrice = amount;
+      const notes = document.getElementById('okExpress')?.checked ? ['⚡ Express 24h +30%'] : [];
+
+      const gift = promoInput ? okGift(promoInput) : null;
+      if (promoInput && !gift) {
+        const p = promoList.find(x => x.code === promoInput) || okRefLookup(promoInput);
+        if (!p) return alert('Code promo invalide !');
+        const perr = p.ref ? '' : okCpCheck(p); if (perr) return alert(perr);
+        if (!p.ref) { p.uses = (p.uses || 0) + 1; localStorage.setItem('overkoro_promos_db', JSON.stringify(promoList)); }
+        const pct = parseFloat(p.discount) || 0;
+        amount *= 1 - pct / 100;
+        notes.push(`Code ${p.code} : -${pct}%`);
+        if (p.ref) okRefCredit(p.ref);
+      }
+
+      const reward = (currentUser.rewards || []).find(r => String(r.rid) === document.getElementById('rewardSelect').value && !r.used);
+      if (reward) {
+        if (reward.type === 'discount') { amount = Math.max(0, amount - 5); notes.push('Fidélité : -5€'); }
+        else notes.push('🎁 +1 Short offert');
+        reward.used = true;
+      }
+
+      if (gift) { const use = Math.min(gift.value, amount); amount -= use; gift.used = true; localStorage.setItem('overkoro_gift_db', JSON.stringify(okGifts())); notes.push(`🎁 Carte cadeau -${use}€`); }
+      amount = Math.round(amount * 100) / 100;
+      const earnedPoints = calculateLoyaltyPoints(amount, currentUser.loyaltyGrade || 'Standard');
+      saveAndSyncUser();
+
+      const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      orders.push({
+        id: 'ORD-' + Date.now().toString(36).toUpperCase(),
+        userEmail: currentUser.email,
+        userName: currentUser.name,
+        plan: plan + (notes.length ? ` (${notes.join(' · ')})` : ''),
+        amount,
+        basePrice,
+        earnedPoints,
+        pointsCredited: false,
+        link: link || 'Non fourni',
+        deliveryLink: '',
+        status: isEdu ? 'En-attente-justificatif' : 'Reçue',
+        paymentStatus: 'Non réglé',
+        internalNote: '',
+        date: new Date().toLocaleDateString('fr-FR'),
+        revisionsLeft: plan.includes('GOD') || plan.includes('Ultra VIP') ? 'Illimités' : 2,
+        eduFile: isEdu ? eduFileLink : null,
+        messages: [{
+          sender: 'Overkoro',
+          text: isEdu ? 'Lien du justificatif scolaire reçu ! En attente de validation.' : `Commande bien reçue ! Tu gagneras +${earnedPoints} points dès la validation du paiement.`,
+          time: 'À l\'instant'
+        }]
+      });
+      localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+      okSlotTake();
+      okNotify(`🛒 Nouvelle commande ${orders[orders.length - 1].id} — ${currentUser.name} : ${orders[orders.length - 1].plan} (${amount} €)`);
+      alert(`Commande enregistrée !${amount < basePrice ? ` Prix réduit : ${amount} € au lieu de ${basePrice} €.` : ''} +${earnedPoints} points seront crédités dès la validation du paiement.`);
+      document.getElementById('newOrderLink').value = '';
+      document.getElementById('promoCodeInput').value = '';
+      if (eduFileInput) eduFileInput.value = '';
+      updateDashboardUI();
+    }
+
+    function loadClientOrders() {
+      const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const myOrders = orders.filter(o => o.userEmail === currentUser.email);
+      const container = document.getElementById('clientOrdersList');
+
+      if (myOrders.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Aucune commande active pour le moment.</p>`;
+        return;
+      }
+
+      container.innerHTML = myOrders.map(o => `
+        <div class="order-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${esc(o.id)} — ${esc(o.plan)}</strong>
+            <span class="status-badge status-${o.status}">${o.status.replace(/-/g, ' ')}</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.4rem;">
+            ${okPriceTag(o)}Date : ${o.date} | Points : <strong style="color:var(--accent-color);">+${o.earnedPoints || 0} PTS ${o.pointsCredited === false ? '⏳ après validation du paiement' : '✅'}</strong> | Paiement : <strong style="color:${o.paymentStatus === 'Payé' ? 'var(--success-color)' : 'var(--warning-color)'};">${o.paymentStatus}</strong>
+            ${o.paymentStatus === 'Non réglé' ? `<button class="btn btn-secondary" style="font-size:0.75rem; padding:0.2rem 0.5rem; margin-left:0.5rem;" onclick="markOrderPaid('${o.id}')">J'ai payé</button>` : ''}
+          </p>
+
+          ${o.deliveryLink ? `
+            <div style="margin-top:0.8rem; border-top:1px dashed var(--border-color); padding-top:0.6rem;">
+              <span style="font-size:0.85rem; color:var(--success-color); font-weight:bold;">🎉 Votre vidéo est prête !</span><br>
+              <div style="display:flex; gap:0.5rem; margin-top:0.4rem; flex-wrap:wrap;">
+                <a href="${esc(safeUrl(o.deliveryLink))}" target="_blank" rel="noopener" class="btn btn-download">📥 Télécharger la vidéo</a>
+                <button class="btn btn-secondary" style="font-size:0.8rem;" onclick="requestRevision('${o.id}')">✏️ Retouche</button>
+              </div>
+            </div>
+          ` : ''}
+
+          ${okProgress(o.status)}${okExtra(o)}
+          <div class="chat-box">
+            ${(o.messages || []).map(m => `
+              <div class="msg ${m.sender === currentUser.name ? 'client' : 'admin'}">
+                <strong>${esc(m.sender)}:</strong> ${esc(m.text)}
+              </div>
+            `).join('')}
+          </div>
+          <div style="display:flex; gap:0.4rem; margin-top:0.5rem;">
+            <input type="text" id="chatInput-${o.id}" placeholder="Écrire un message..." style="padding:0.4rem; font-size:0.85rem;">
+            <button class="btn btn-primary" style="padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="sendClientMessage('${o.id}')">Envoyer</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function markOrderPaid(orderId) {
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.paymentStatus = 'Payé / En attente de vérif';
+        if (!order.messages) order.messages = [];
+        order.messages.push({
+          sender: currentUser.name,
+          text: '💳 Paiement effectué via Revolut ! En attente de validation.',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        alert("Notification de paiement envoyée !");
+        loadClientOrders();
+      }
+    }
+
+    function sendClientMessage(orderId) {
+      const input = document.getElementById('chatInput-' + orderId);
+      const text = input.value.trim();
+      if (!text) return;
+
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        if (!order.messages) order.messages = [];
+        order.messages.push({
+          sender: currentUser.name,
+          text: text,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        okNotify(`💬 ${currentUser.name} (${orderId}) : ${text}`);
+        input.value = '';
+        loadClientOrders();
+      }
+    }
+
+    function requestRevision(orderId) {
+      const notes = prompt("Décrivez précisément les retouches souhaitées :");
+      if (!notes) return;
+
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = 'En-cours';
+        if (!order.messages) order.messages = [];
+        order.messages.push({
+          sender: currentUser.name,
+          text: `✏️ DEMANDE DE RETOUCHE : ${notes}`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        alert("Demande de retouche transmise !");
+        loadClientOrders();
+      }
+    }
+
+    function checkForUnreadAdminMessages() {
+      const orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      if (!currentUser) return;
+      const myOrders = orders.filter(o => o.userEmail === currentUser.email);
+      let hasAdminMsg = myOrders.some(o => o.messages && o.messages.length > 0 && o.messages[o.messages.length - 1].sender.includes('Admin'));
+      if (hasAdminMsg) {
+        document.getElementById('pageTitle').innerText = "🔴 Nouveau message ! — Overkoro";
+      }
+    }
+
+    if (currentUser) updateDashboardUI();
+
+    function okCpCheck(c) {
+      if (c.exp && new Date(c.exp + 'T23:59:59') < Date.now()) return 'Ce code a expiré !';
+      if (c.max && (c.uses || 0) >= c.max) return "Ce code a atteint sa limite d'utilisation !"; return '';
+    }
+    function okPriceTag(o) {
+      return o.basePrice != null && o.amount < o.basePrice ? `<span>💸 <s style="color:var(--text-muted)">${o.basePrice} €</s> → <b style="color:var(--success-color)">${o.amount} €</b> | </span>` : '';
+    }
+    function okPricePreview() {
+      const el = document.getElementById('okPrice'); if (!el || !currentUser) return; el.textContent = '';
+      const m = (document.getElementById('newOrderPlan').value || '').match(/(\d+(?:[.,]\d+)?)\s*€/); if (!m) return;
+      let base = parseFloat(m[1].replace(',', '.')); if (document.getElementById('okExpress')?.checked) base = Math.round(base * 130) / 100; let amt = base;
+      const pl = document.getElementById('newOrderPlan').value, up = document.getElementById('okUpsell');
+      if (up) up.textContent = /1 Short/.test(pl) ? '💡 Pack 5 Shorts à 20 € : 4 € l\'unité + 1 Short offert !' : /1 Vidéo Longue/.test(pl) ? '💡 Pack 5 Vidéos Longues à 65 € : 13 € l\'unité.' : /Pass|Pack/.test(pl) ? '' : '💡 Ajoute une miniature pour 4 € dans le devis interactif.';
+      const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+      const list = JSON.parse(localStorage.getItem('overkoro_promos_db')) || [{ code: 'FIRST10', discount: 10 }, { code: 'OVERKORO', discount: 20 }];
+      const p = code && (list.find(x => x.code === code) || okRefLookup(code));
+      if (p && !(p.ref ? '' : okCpCheck(p))) amt *= 1 - (parseFloat(p.discount) || 0) / 100;
+      const r = (currentUser.rewards || []).find(x => String(x.rid) === document.getElementById('rewardSelect').value && !x.used);
+      if (r && r.type === 'discount') amt = Math.max(0, amt - 5);
+      const g = code && okGift(code); if (g) amt = Math.max(0, amt - g.value);
+      amt = Math.round(amt * 100) / 100;
+      if (amt < base) el.innerHTML = `💸 <s style="color:var(--text-muted)">${base} €</s> → <span style="color:var(--success-color)">${amt} €</span>`;
+    }
+    window.addEventListener('DOMContentLoaded', () => ['newOrderPlan', 'rewardSelect'].forEach(i => document.getElementById(i)?.addEventListener('change', okPricePreview)));
+    const okGifts = () => JSON.parse(localStorage.getItem('overkoro_gift_db')) || [];
+    const okGift = c => okGifts().find(g => g.code === c && !g.used);
+    function okView(p) { const v = JSON.parse(localStorage.getItem('overkoro_views_db')) || {}; v[p] = (v[p] || 0) + 1; localStorage.setItem('overkoro_views_db', JSON.stringify(v)); }
+    function okSlotTake() { const s = JSON.parse(localStorage.getItem('overkoro_slots_db') || 'null'); if (s && s.left > 0) { s.left--; localStorage.setItem('overkoro_slots_db', JSON.stringify(s)); } }
+    const OK_EXTRAS = [['Miniature seule', 4, 'Miniature YouTube sur mesure'], ['Pack Lancement de chaîne', 60, 'Intro + outro + miniature + 3 Shorts'], ['Highlights de stream', 35, 'Meilleurs moments en une vidéo de 5-10 min'], ['Sous-titres traduits', 5, 'Sous-titres dans une 2e langue'], ['Retouche supplémentaire', 3, 'Une retouche en plus de celles incluses']];
+    const _gc = getCatalog;
+    getCatalog = function () {
+      const c = _gc();
+      if (!localStorage.getItem('overkoro_extras_added')) {
+        let id = Math.max(100, ...c.map(x => +x.id || 0));
+        OK_EXTRAS.forEach(([title, price, f]) => { if (!c.some(x => x.title === title)) c.push({ id: ++id, title, price, category: 'particuliers', features: [f], badge: 'Nouveau', isGod: false }); });
+        localStorage.setItem('overkoro_catalog_db', JSON.stringify(c)); localStorage.setItem('overkoro_extras_added', '1');
+      }
+      return c;
+    };
+    function okProgress(st) {
+      const i = st === 'Terminée' ? 2 : st === 'En-cours' ? 1 : 0;
+      if (st === 'Refusée') return '';
+      return '<div class="okp">' + ['Reçue', 'En cours', 'Terminée'].map((l, j) => `<span class="${j <= i ? 'on' : ''}">${l}</span>`).join('') + '</div>';
+    }
+    function okOfferTick() {
+      const el = document.getElementById('okOffer'); let o = null;
+      try { o = JSON.parse(localStorage.getItem('overkoro_offer_db')); } catch (e) {}
+      const left = o && o.end ? new Date(o.end) - Date.now() : 0;
+      if (!o || !o.text || left <= 0) { el.style.display = 'none'; return; }
+      const d = Math.floor(left / 864e5), h = Math.floor(left % 864e5 / 36e5), m = Math.floor(left % 36e5 / 6e4), sc = Math.floor(left % 6e4 / 1e3);
+      el.style.display = 'block'; el.textContent = `🔥 ${o.text} — encore ${d ? d + 'j ' : ''}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sc).padStart(2, '0')}`;
+    }
+    setInterval(okOfferTick, 1000); window.addEventListener('DOMContentLoaded', okOfferTick);
+    window.addEventListener('ok-sync', () => { try { renderDynamicTabs(); renderPortfolio(); renderCatalogUI(); loadHeaderAvailability(); renderPatchnotes(); if (currentUser) { currentUser = (JSON.parse(localStorage.getItem('overkoro_users_db')) || []).find(u => u.email === currentUser.email) || currentUser; updateDashboardUI(); } } catch (e) {} });
+
+    /* ===== Facture PDF (impression → "Enregistrer en PDF") ===== */
+    const okInvoice = o => { const w = window.open('', '_blank'); if (!w) return alert('Autorise les pop-ups pour générer la facture.');
+      const m = Number(o.amount || 0).toFixed(2);
+      w.document.write(`<title>Facture ${esc(o.id)}</title><body style="font-family:sans-serif;max-width:620px;margin:40px auto"><h1>Facture ${esc(o.id)}</h1><p><b>Overkoro</b> — montage vidéo<br>Date : ${esc(o.date)}</p><p>Client : ${esc(o.userName)} (${esc(o.userEmail)})</p><table style="width:100%;border-collapse:collapse"><tr><td style="border-bottom:1px solid #ccc;padding:8px">${esc(o.plan)}</td><td style="text-align:right;border-bottom:1px solid #ccc">${m} €</td></tr></table><h2 style="text-align:right">Total payé : ${m} €</h2><p style="color:#666;font-size:12px">TVA non applicable. Paiement reçu.</p><script>onload=()=>print()<\/script>`); w.document.close(); };
+    const okInvoiceId = id => okInvoice((JSON.parse(localStorage.getItem('overkoro_orders_db')) || []).find(o => o.id === id));
+    // PWA sans fichier externe
+    try { const mf = { name: 'Overkoro', short_name: 'Overkoro', start_url: location.href, display: 'standalone', background_color: '#0d0f12', theme_color: '#6366f1', icons: [{ src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#6366f1"/><text x="50" y="68" font-size="56" text-anchor="middle">🎬</text></svg>'), sizes: 'any', type: 'image/svg+xml' }] };
+      const l = document.createElement('link'); l.rel = 'manifest'; l.href = URL.createObjectURL(new Blob([JSON.stringify(mf)], { type: 'application/manifest+json' })); document.head.appendChild(l); } catch (e) {}
+
+    const okCode = u => 'OK' + Number(u.id).toString(36).toUpperCase().slice(-5);
+    const okUsers = () => JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+    function okRefLookup(code) { if (!currentUser || currentUser.refUsed) return null; const u = okUsers().find(x => okCode(x) === code && x.email !== currentUser.email); return u ? { code, discount: 10, ref: u.email } : null; }
+    function okRefCredit(email) {
+      const us = okUsers(), sp = us.find(x => x.email === email); if (!sp) return;
+      sp.loyaltyPoints = (sp.loyaltyPoints || 0) + 50; localStorage.setItem('overkoro_users_db', JSON.stringify(us));
+      currentUser.loyaltyPoints = (currentUser.loyaltyPoints || 0) + 50; currentUser.refUsed = true; okNotify(`🤝 Parrainage : ${sp.name} a parrainé ${currentUser.name} (+50 pts chacun)`);
+    }
+    const _udu = updateDashboardUI;
+    updateDashboardUI = function () { _udu(); const b = document.getElementById('okRef'); if (b && currentUser) b.innerHTML = `<div class="okb">🤝 <b>Parrainage</b> : ton code <b style="color:var(--accent-color)">${okCode(currentUser)}</b> — ton filleul gagne −10 % et vous recevez tous les deux +50 points à sa 1re commande.</div>`; };
+    function okExtra(o) {
+      let h = '';
+      if (o.paymentStatus === 'Payé') h += `<button class="btn btn-secondary" style="font-size:.8rem;margin:.3rem 0" onclick="okInvoiceId('${o.id}')">🧾 Facture PDF</button>`;
+      if (o.preview && o.paymentStatus !== 'Payé') h += /\.(mp4|webm)(\?|$)/i.test(o.preview) ? `<div style="position:relative;max-width:420px;margin:.5rem 0"><video src="${esc(safeUrl(o.preview))}" controls controlsList="nodownload" style="width:100%;border-radius:8px"></video><div class="okwm">OVERKORO · APERÇU</div></div>` : `<p style="font-size:.85rem">👁️ <a href="${esc(safeUrl(o.preview))}" target="_blank" rel="noopener">Voir l'aperçu (filigrané)</a></p>`;
+      if (o.status === 'Terminée' && !(JSON.parse(localStorage.getItem('overkoro_reviews_db')) || []).some(r => r.id === o.id)) h += `<div class="okb">⭐ Ton avis ? <select id="okS-${o.id}"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select> <input type="text" id="okT-${o.id}" placeholder="Un petit mot…" style="padding:.4rem;width:55%"> <button class="btn btn-primary" style="padding:.4rem .8rem" onclick="okReview('${o.id}')">Publier</button></div>`;
+      return h;
+    }
+    function okReview(id) {
+      const t = document.getElementById('okT-' + id).value.trim(), n = +document.getElementById('okS-' + id).value; if (!t) return alert('Écris un petit mot !');
+      const r = JSON.parse(localStorage.getItem('overkoro_reviews_db')) || []; r.push({ id, name: currentUser.name, stars: n, text: t });
+      localStorage.setItem('overkoro_reviews_db', JSON.stringify(r)); okNotify(`⭐ Nouvel avis ${n}/5 de ${currentUser.name} : ${t}`); alert('Merci pour ton avis !'); loadClientOrders(); okRenderHome();
+    }
+    function okRenderHome() {
+      const el = document.getElementById('okHome'); if (!el) return; let h = '';
+      const ba = JSON.parse(localStorage.getItem('overkoro_ba_db') || 'null'), rv = JSON.parse(localStorage.getItem('overkoro_reviews_db')) || [];
+      if (ba && ba.before && ba.after) h += `<div class="okb"><h3 style="text-align:center">✂️ Avant / Après</h3><div style="position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:10px;margin-top:.6rem"><img src="${esc(safeUrl(ba.after))}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div id="okBAt" style="position:absolute;inset:0;clip-path:inset(0 50% 0 0)"><img src="${esc(safeUrl(ba.before))}" style="width:100%;height:100%;object-fit:cover"></div><span class="okwm" style="inset:auto auto 8px 10px;font-size:.8rem;transform:none">AVANT</span><span class="okwm" style="inset:auto 10px 8px auto;font-size:.8rem;transform:none">APRÈS</span><input type="range" min="0" max="100" value="50" style="position:absolute;bottom:30px;left:5%;width:90%" oninput="document.getElementById('okBAt').style.clipPath='inset(0 '+(100-this.value)+'% 0 0)'"></div></div>`;
+      if (rv.length) { const avg = (rv.reduce((a, r) => a + r.stars, 0) / rv.length).toFixed(1); h += `<div class="okb"><h3 style="text-align:center">⭐ ${avg}/5 — ${rv.length} avis clients</h3>` + rv.slice(-3).reverse().map(r => `<p style="margin-top:.6rem"><b>${esc(r.name)}</b> ${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}<br><span style="color:var(--text-muted)">${esc(r.text)}</span></p>`).join('') + '</div>'; }
+      const sl = JSON.parse(localStorage.getItem('overkoro_slots_db') || 'null');
+      if (sl && sl.left != null) h = `<div class="okb" style="text-align:center;font-weight:700">${sl.left > 0 ? `🔥 Plus que ${sl.left} place(s) disponible(s) ce mois-ci` : '⛔ Complet ce mois-ci — réponse sous peu'}</div>` + h;
+      el.innerHTML = h;
+    }
+    function okPayRender() {
+      const el = document.getElementById('okPay'); if (!el) return;
+      el.innerHTML = (OK.PAYPAL ? `<a class="btn btn-secondary" href="${esc(safeUrl(OK.PAYPAL))}" target="_blank" rel="noopener">🅿️ PayPal</a>` : '') + (OK.IBAN ? `<button class="btn btn-secondary" onclick="navigator.clipboard.writeText(OK.IBAN);alert('IBAN copié !')">🏦 Virement (copier l'IBAN)</button>` : '');
+    }
+    const OK_PACKS = [['Pack 5 Shorts', 20, 'S', 5], ['Pass Streamer / VOD', 45, 'S', 8], ['Pass Starter', 30, 'S', 5], ['Pass Pro', 80, 'S', 15], ['Pass Ultra VIP', 140, 'S', 25], ['Pass Shorts Express', 110, 'S', 30], ['Pack 5 Vidéos Longues', 65, 'L', 5], ['Pass Starter', 30, 'L', 1], ['Pass Pro', 80, 'L', 3], ['Pass Ultra VIP', 140, 'L', 6]];
+    function okPackHint(q) {
+      let el = document.getElementById('okPack'); if (!el) { el = document.createElement('p'); el.id = 'okPack'; el.style.cssText = 'color:var(--success-color);font-weight:700;margin-top:.4rem'; document.getElementById('calcDelay').after(el); }
+      const best = OK_PACKS.filter(p => p[2] === (q.long ? 'L' : 'S') && p[3] >= q.qty && p[1] < q.total).sort((a, b) => a[1] - b[1])[0];
+      el.textContent = best ? `💡 Le « ${best[0]} » (${best[1]} €) te coûte ${(q.total - best[1]).toFixed(2)} € de moins et couvre ${best[3]} vidéos.` : '';
+    }
+    const OK_EN = { 'Formules & Passes': 'Plans & Passes', 'Espace Client': 'Client Area', 'Voir les formules': 'See plans', 'Portfolio': 'Portfolio', 'Patchnotes': 'Patch notes', 'Commander': 'Order', 'Envoyer': 'Send', 'Se connecter': 'Log in', 'Déconnexion': 'Log out', 'Retouche': 'Revision' };
+    let okEn = false;
+    function okLang() {
+      okEn = !okEn; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      for (let n; (n = w.nextNode());) { const t = n.nodeValue.trim(); const k = okEn ? t : Object.keys(OK_EN).find(x => OK_EN[x] === t); const v = okEn ? OK_EN[t] : k; if (v && (okEn ? OK_EN[t] : k)) n.nodeValue = n.nodeValue.replace(t, v); }
+      document.documentElement.lang = okEn ? 'en' : 'fr'; document.getElementById('okLangBtn').textContent = okEn ? '🇫🇷 FR' : '🇬🇧 EN';
+    }
+    window.addEventListener('DOMContentLoaded', () => { okRenderHome(); okPayRender(); });
+    window.addEventListener('ok-sync', okRenderHome);
+  </script>
+</body>
+</html>

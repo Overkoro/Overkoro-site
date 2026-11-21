@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="adminTitle">Overkoro — Panel Administration Pro (BETA 1.5)</title>
+  <style>
+    :root {
+      --bg-color: #0d0f12;
+      --card-bg: #161920;
+      --card-bg-hover: #1f242e;
+      --accent-color: #6366f1;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #262b36;
+      --success-color: #22c55e;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-main); padding: 2.5rem 5%; display: none; }
+
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+    }
+
+    .badge-admin {
+      background: rgba(239, 68, 68, 0.2); color: var(--danger-color);
+      border: 1px solid var(--danger-color); padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; font-size: 0.85rem;
+    }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.9rem; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; vertical-align: middle; }
+    th { color: var(--text-muted); font-weight: 600; }
+
+    select, input[type="text"], input[type="url"], input[type="number"], textarea, button {
+      padding: 0.4rem 0.7rem; border-radius: 6px; border: 1px solid var(--border-color);
+      background: var(--bg-color); color: #fff; font-size: 0.85rem; cursor: pointer;
+    }
+
+    input[type="url"], input[type="text"], input[type="number"], textarea { width: 100%; cursor: text; }
+    .btn-danger { background: var(--danger-color); border: none; font-weight: 600; color: #fff; }
+    .btn-save { background: var(--success-color); border: none; font-weight: 600; color: #fff; }
+    .btn-refresh { background: var(--accent-color); border: none; font-weight: 600; padding: 0.6rem 1.2rem; border-radius: 6px; color: #fff; }
+    .btn-validate { background: var(--success-color); border: none; font-weight: 600; color: #fff; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+    .btn-reject { background: var(--danger-color); border: none; font-weight: 600; color: #fff; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+    .toast-wrap{position:fixed;bottom:1.2rem;right:1.2rem;display:flex;flex-direction:column;gap:.5rem;z-index:999}
+    .toast{background:var(--card-bg);color:var(--text-main);border:1px solid var(--accent-color);padding:.7rem 1rem;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.35);max-width:320px;font-size:.9rem}
+    .row{display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap;background:var(--card-bg-hover);padding:.5rem .8rem;border-radius:6px;margin-top:.5rem;font-size:.85rem}
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>Panel Administration Overkoro (BETA 1.5)</h1>
+      <p style="color:var(--text-muted);">Suivi des commandes, gestion des passes, fidélité et onglets dynamiques.</p>
+    </div>
+    <div style="display:flex; gap:1rem; align-items:center;">
+      <button class="btn-refresh" onclick="loadAdminData()">🔄 Actualiser</button>
+      <span class="badge-admin">🔑 ADMIN SÉCURISÉ</span>
+    </div>
+  </header>
+
+  <!-- DISPONIBILITÉ -->
+  <div class="card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+    <div>
+      <h3>🟢 Statut de Disponibilité en Direct</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem;">Modifie l'affichage du badge sur le site client.</p>
+    </div>
+    <div style="display:flex; gap:0.5rem;">
+      <button class="btn-validate" onclick="setAvailability('available')">🟢 Disponible</button>
+      <button class="btn-reject" onclick="setAvailability('busy')">🔴 Complet</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="grid">
+    <div class="card" style="margin-bottom:0;">
+      <h4 style="color:var(--text-muted);">Clients Inscrits</h4>
+      <p id="statUsers" style="font-size:2rem; font-weight:800; color:var(--accent-color); margin-top:0.4rem;">0</p>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <h4 style="color:var(--text-muted);">Commandes Totales</h4>
+      <p id="statOrders" style="font-size:2rem; font-weight:800; color:var(--warning-color); margin-top:0.4rem;">0</p>
+    </div>
+    <div class="card" style="margin-bottom:0;">
+      <h4 style="color:var(--text-muted);">Chiffre d'Affaires</h4>
+      <p id="statRevenue" style="font-size:2rem; font-weight:800; color:var(--success-color); margin-top:0.4rem;">0 €</p>
+    </div>
+  </div>
+
+  <!-- COMMANDES -->
+  <div class="card" style="overflow-x:auto;">
+    <h3>📦 Gestion des Commandes & Passes</h3>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem">
+      <input type="text" id="okQ" placeholder="🔍 Client, ID, formule…" oninput="loadAdminData()" style="max-width:260px">
+      <select id="okS" onchange="loadAdminData()"><option value="">Tous les statuts</option><option>En-attente-justificatif</option><option>Reçue</option><option>En-cours</option><option>Terminée</option><option>Refusée</option></select>
+      <input type="date" id="okD" onchange="loadAdminData()" style="max-width:160px">
+      <button class="btn-refresh" onclick="okCsv()">⬇️ Export CSV</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID & Client</th>
+          <th>Formule</th>
+          <th>Paiement</th>
+          <th>Rushes</th>
+          <th>Statut</th>
+          <th>Lien Livraison</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="adminOrdersTable"></tbody>
+    </table>
+  </div>
+
+  <div class="card" id="okDash"></div>
+  <div class="card" id="okCfg"></div>
+  <div class="card">
+    <h3>📧 Notifications e-mail</h3>
+    <p style="color:var(--text-muted);font-size:.85rem;margin:.4rem 0">Envoie un e-mail de test à <b id="okMailTo"></b> et affiche le résultat exact.</p>
+    <button class="btn-refresh" onclick="okTestMail()">Envoyer un e-mail de test</button>
+  </div>
+  <div class="card" id="okCfg2"></div>
+
+  <div class="card">
+    <h3>🔑 Mot de passe admin</h3>
+    <p style="color:var(--text-muted);font-size:.85rem;margin:.4rem 0">Saisis un nouveau mot de passe : le panel génère son empreinte chiffrée (PBKDF2). Copie-la dans <code>ADMIN_HASH</code> en bas du fichier admin.</p>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap"><input type="password" id="okNewPw" placeholder="Nouveau mot de passe (12+ caractères)" style="max-width:320px"><button class="btn-save" onclick="okGenHash()">Générer</button></div>
+    <textarea id="okHashOut" readonly rows="2" style="margin-top:.6rem;display:none" onclick="this.select()"></textarea>
+  </div>
+
+  <!-- OFFRE LIMITÉE -->
+  <div class="card">
+    <h3>⏳ Offre à durée limitée (compte à rebours sur le site)</h3>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem">
+      <input type="text" id="okOfferText" placeholder="−20 % sur les Shorts" style="max-width:320px">
+      <input type="datetime-local" id="okOfferEnd" style="max-width:220px">
+      <button class="btn-save" onclick="okSaveOffer()">Activer</button>
+      <button class="btn-danger" onclick="okClearOffer()">Arrêter</button>
+    </div>
+  </div>
+
+  <!-- GESTION CLIENTS & PASSES -->
+  <div class="card" style="overflow-x:auto;">
+    <h3>👥 Gestion des Comptes, Grades & Passes Actifs</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>E-mail</th>
+          <th>Grade Actuel</th>
+          <th>Pass Actif</th>
+          <th>Points</th>
+          <th>Actions (Points / Retrait de Pass)</th>
+        </tr>
+      </thead>
+      <tbody id="adminUsersTable"></tbody>
+    </table>
+  </div>
+
+  <!-- GESTION DES COUPONS DE POINTS -->
+  <div class="card">
+    <h3>🎟️ Création de Coupons de Points Fidélité</h3>
+    <div style="display:flex; gap:0.8rem; margin-top:1rem; flex-wrap:wrap;">
+      <input type="text" id="newCouponCode" placeholder="Code du coupon (ex: BONUS50)" style="max-width:220px;">
+      <input type="number" id="newCouponPoints" placeholder="Points offerts (ex: 50)" style="max-width:180px;">
+      <input type="date" id="newCouponExp" title="Date d'expiration (optionnel)" style="max-width:160px;">
+      <input type="number" id="newCouponMax" placeholder="Utilisations max" style="max-width:150px;">
+      <button class="btn-save" onclick="createNewCoupon()">➕ Créer le coupon</button>
+    </div>
+    <div id="adminCouponsList" style="margin-top:1rem;"></div>
+  </div>
+
+  <!-- CODES PROMO -->
+  <div class="card">
+    <h3>🏷️ Codes Promo (réduction en %)</h3>
+    <div style="display:flex; gap:0.8rem; margin-top:1rem; flex-wrap:wrap;">
+      <input type="text" id="promoCode" placeholder="Code (ex: ETE15)" style="max-width:220px;">
+      <input type="number" id="promoPct" placeholder="% de réduction" style="max-width:180px;">
+      <input type="date" id="promoExp" title="Date d'expiration (optionnel)" style="max-width:160px;">
+      <input type="number" id="promoMax" placeholder="Utilisations max" style="max-width:150px;">
+      <button class="btn-save" onclick="addPromo()">➕ Ajouter</button>
+    </div>
+    <div id="adminPromosList" style="margin-top:1rem;"></div>
+  </div>
+
+  <!-- CATALOGUE -->
+  <div class="card">
+    <h3>🛒 Catalogue des Formules (prix & offres du site)</h3>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.6rem; margin-top:1rem;">
+      <input type="text" id="catTitle" placeholder="Titre">
+      <input type="number" id="catPrice" placeholder="Prix (€)">
+      <select id="catCategory"><option value="particuliers">Particuliers</option><option value="etudiants">Étudiants</option><option value="business">Business</option></select>
+      <input type="text" id="catBadge" placeholder="Badge (optionnel)">
+      <input type="text" id="catFeatures" placeholder="Avantages (séparés par ;)">
+      <button class="btn-save" onclick="addCatalogItem()">➕ Ajouter</button>
+    </div>
+    <div id="adminCatalogList" style="margin-top:1rem;"></div>
+  </div>
+
+  <!-- PORTFOLIO -->
+  <div class="card">
+    <h3>🎬 Portfolio (vidéos YouTube)</h3>
+    <div style="display:flex; gap:0.8rem; margin-top:1rem; flex-wrap:wrap;">
+      <input type="text" id="pfTitle" placeholder="Titre de la vidéo" style="max-width:260px;">
+      <input type="text" id="pfUrl" placeholder="Lien YouTube" style="max-width:320px;">
+      <button class="btn-save" onclick="addPortfolioItem()">➕ Ajouter</button>
+    </div>
+    <div id="adminPortfolioList" style="margin-top:1rem;"></div>
+  </div>
+
+  <!-- SAUVEGARDE -->
+  <div class="card">
+    <h3>💾 Sauvegarde & Restauration</h3>
+    <p style="color:var(--text-muted); font-size:0.85rem; margin:0.5rem 0 1rem;">Les données sont stockées dans ce navigateur : exporte régulièrement un fichier de secours.</p>
+    <div style="display:flex; gap:0.8rem;">
+      <button class="btn-save" onclick="exportBackup()">⬇️ Exporter (JSON)</button>
+      <button class="btn-refresh" onclick="document.getElementById('importFile').click()">⬆️ Importer</button>
+      <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importBackup(this)">
+    </div>
+  </div>
+
+  <!-- PATCHNOTES & ONGLETS (AVEC ÉDITION) -->
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1.5rem;">
+    <div class="card">
+      <h3>📋 Publier un Patch Note</h3>
+      <div style="display:flex; flex-direction:column; gap:0.8rem; margin-top:1rem;">
+        <input type="text" id="patchVersion" placeholder="Version (ex: BETA 1.5)">
+        <input type="text" id="patchTitle" placeholder="Titre de la mise à jour">
+        <textarea id="patchChanges" rows="3" placeholder="Notes (un point par ligne)"></textarea>
+        <button class="btn-save" onclick="addNewPatch()">Publier</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📑 Gestion & Édition des Onglets du Site</h3>
+      <div style="display:flex; flex-direction:column; gap:0.8rem; margin-top:1rem;">
+        <input type="text" id="tabId" placeholder="ID (ex: fidélité)">
+        <input type="text" id="tabLabel" placeholder="Nom (ex: 🌟 Fidélité)">
+        <textarea id="tabContent" rows="3" placeholder="Contenu de la page (texte simple)"></textarea>
+        <button class="btn-save" onclick="addNewTab()">Ajouter l'onglet</button>
+      </div>
+      <div id="adminTabsList" style="margin-top:1rem;"></div>
+    </div>
+  </div>
+
+  <!-- MESSAGERIE DIRECTE -->
+  <div class="card">
+    <h3>💬 Boîte de Réception (Messages Directs)</h3>
+    <div id="adminDirectMessagesList"></div>
+  </div>
+
+  <script>
+    /* ===== OVERKORO CORE : base en ligne (Supabase), hash, notifications ===== */
+    const OK = { SUPABASE_URL: '', SUPABASE_KEY: '', DISCORD_WEBHOOK: '', PAYPAL: '', IBAN: '', EMAIL: 'overkoro.pro@gmail.com' }; // ← à remplir (voir SETUP.md)
+    const okSha = async s => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('overkoro|' + s)))].map(b => b.toString(16).padStart(2, '0')).join('');
+    const okNotify = t => {
+      if (OK.DISCORD_WEBHOOK) fetch(OK.DISCORD_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: t }) }).catch(() => {});
+      if (OK.EMAIL) okMail(t).then(r => { if (!r.ok) console.warn('E-mail Overkoro non envoyé :', r.msg); });
+    };
+    const okMail = t => fetch('https://formsubmit.co/ajax/' + OK.EMAIL, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ _subject: 'Overkoro — ' + t.slice(0, 60), message: t, _template: 'box', _captcha: 'false' }) })
+      .then(r => r.json()).then(j => ({ ok: j.success === true || j.success === 'true', msg: j.message || '' }))
+      .catch(e => ({ ok: false, msg: location.protocol === 'file:' ? "La page est ouverte depuis un fichier local : l'envoi ne marche que depuis le site hébergé en https." : 'Requête bloquée (' + e.message + ') — bloqueur de pub ou site non hébergé ?' }));
+    (() => {
+      const on = OK.SUPABASE_URL && OK.SUPABASE_KEY, raw = Storage.prototype.setItem;
+      const H = { apikey: OK.SUPABASE_KEY, Authorization: 'Bearer ' + OK.SUPABASE_KEY, 'Content-Type': 'application/json' };
+      const sk = k => /^overkoro_(.+_db|availability_status)$/.test(k);
+      const push = (k, v) => fetch(OK.SUPABASE_URL + '/rest/v1/kv', { method: 'POST', headers: { ...H, Prefer: 'resolution=merge-duplicates' }, body: JSON.stringify({ key: k, value: v }) }).catch(() => {});
+      Storage.prototype.setItem = function (k, v) { raw.call(this, k, v); if (on && this === localStorage && sk(k)) push(k, String(v)); };
+      if (!on) return;
+      async function pull() {
+        try {
+          const rows = await (await fetch(OK.SUPABASE_URL + '/rest/v1/kv?select=key,value', { headers: H })).json();
+          if (!Array.isArray(rows)) return;
+          let ch = false; const have = new Set(rows.map(r => r.key));
+          rows.forEach(({ key, value }) => { if (localStorage.getItem(key) !== value) { raw.call(localStorage, key, value); ch = true; } });
+          Object.keys(localStorage).filter(k => sk(k) && !have.has(k)).forEach(k => push(k, localStorage.getItem(k)));
+          if (ch) window.dispatchEvent(new Event('ok-sync'));
+        } catch (e) {}
+      }
+      pull(); setInterval(pull, 15000);
+    })();
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const safeUrl = u => /^https?:\/\//i.test(u) ? u : '#';
+    window.alert = msg => {
+      let w = document.querySelector('.toast-wrap');
+      if (!w) { w = document.createElement('div'); w.className = 'toast-wrap'; document.body.appendChild(w); }
+      const t = document.createElement('div');
+      t.className = 'toast'; t.textContent = msg; w.appendChild(t);
+      setTimeout(() => t.remove(), 4500);
+    };
+
+    const TIME = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const jget = (k, d) => JSON.parse(localStorage.getItem(k)) || d;
+    const jset = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+    const DEFAULT_PROMOS = [{ code: 'FIRST10', discount: 10 }, { code: 'OVERKORO', discount: 20 }];
+    const BACKUP_KEYS = ['users', 'orders', 'direct_msgs', 'coupons', 'promos', 'catalog', 'portfolio', 'patchnotes', 'tabs'].map(k => 'overkoro_' + k + '_db');
+    const delBtn = fn => `<button class="btn-danger" style="font-size:0.7rem; padding:0.2rem 0.5rem;" onclick="${fn}">Supprimer</button>`;
+
+    function validatePayment(orderId) {
+      const orders = jget('overkoro_orders_db', []);
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+      o.paymentStatus = 'Payé';
+      let bonus = '';
+      if (o.pointsCredited === false) {
+        const users = jget('overkoro_users_db', []);
+        const u = users.find(x => x.email === o.userEmail);
+        if (u) {
+          u.loyaltyPoints = (u.loyaltyPoints || 0) + (o.earnedPoints || 0);
+          jset('overkoro_users_db', users);
+          o.pointsCredited = true;
+          bonus = ` +${o.earnedPoints || 0} points de fidélité crédités.`;
+        }
+      }
+      (o.messages = o.messages || []).push({ sender: 'Overkoro (Admin)', text: '✅ Paiement validé !' + bonus, time: TIME() });
+      jset('overkoro_orders_db', orders);
+      loadAdminData();
+    }
+
+    function replyOrder(orderId) {
+      const orders = jget('overkoro_orders_db', []);
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+      const history = (o.messages || []).slice(-5).map(m => `${m.sender} : ${m.text}`).join('\n');
+      let text = prompt(`Conversation avec ${o.userName} (5 derniers messages) :\n\n${history}\n\nTa réponse (ou n° d'un modèle) :\n${OK_TPL.map((t, i) => (i + 1) + '. ' + t).join('\n')}`);
+      if (!text || !text.trim()) return;
+      text = OK_TPL[parseInt(text, 10) - 1] || text;
+      (o.messages = o.messages || []).push({ sender: 'Overkoro (Admin)', text: text.trim(), time: TIME() });
+      jset('overkoro_orders_db', orders);
+      loadAdminData();
+    }
+
+    function renderInbox() {
+      const msgs = jget('overkoro_direct_msgs_db', []);
+      const unread = msgs.filter(m => !m.read).length;
+      document.getElementById('adminDirectMessagesList').innerHTML = msgs.length
+        ? `<p style="color:var(--text-muted); font-size:0.85rem;">${unread} non lu(s) sur ${msgs.length}</p>` + msgs.map(m => `
+          <div style="background:var(--card-bg-hover); padding:0.8rem 1rem; border-radius:8px; margin-top:0.6rem; border-left:3px solid ${m.read ? 'var(--border-color)' : 'var(--accent-color)'};">
+            <div style="display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;"><strong>${esc(m.subject)}</strong><small style="color:var(--text-muted);">${esc(m.sender)} — ${esc(m.date)}</small></div>
+            <p style="margin:0.5rem 0; white-space:pre-wrap; font-size:0.9rem;">${esc(m.body)}</p>
+            <button class="btn-validate" onclick="toggleMsgRead(${m.id})">${m.read ? 'Marquer non lu' : '✔ Marquer lu'}</button> ${delBtn(`deleteMsg(${m.id})`)}
+          </div>`).join('')
+        : '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">Aucun message.</p>';
+    }
+    function toggleMsgRead(id) {
+      const msgs = jget('overkoro_direct_msgs_db', []);
+      const m = msgs.find(x => x.id === id);
+      if (m) { m.read = !m.read; jset('overkoro_direct_msgs_db', msgs); loadAdminData(); }
+    }
+    function deleteMsg(id) { jset('overkoro_direct_msgs_db', jget('overkoro_direct_msgs_db', []).filter(x => x.id !== id)); loadAdminData(); }
+
+    const getPromos = () => jget('overkoro_promos_db', DEFAULT_PROMOS.map(p => ({ ...p })));
+    function renderPromos() {
+      document.getElementById('adminPromosList').innerHTML = getPromos().map((p, i) => `<div class="row"><span><strong>${esc(p.code)}</strong> — -${parseFloat(p.discount) || 0}%${okCpInfo(p)}</span><span><button class="btn-save" style="font-size:0.7rem; padding:0.2rem 0.5rem;" onclick="okEditPromo(${i})">✏️</button> ${delBtn(`deletePromo(${i})`)}</span></div>`).join('') || '<p style="color:var(--text-muted); font-size:0.85rem;">Aucun code promo.</p>';
+    }
+    function addPromo() {
+      const code = document.getElementById('promoCode').value.trim().toUpperCase();
+      const discount = parseFloat(document.getElementById('promoPct').value);
+      if (!code || isNaN(discount) || discount <= 0 || discount > 100) return alert('Code + pourcentage (1 à 100) requis !');
+      const promos = getPromos();
+      if (promos.some(p => p.code === code)) return alert('Ce code existe déjà !');
+      promos.push({ code, discount, exp: document.getElementById('promoExp').value || '', max: parseInt(document.getElementById('promoMax').value) || 0, uses: 0 });
+      jset('overkoro_promos_db', promos);
+      document.getElementById('promoCode').value = ''; document.getElementById('promoPct').value = '';
+      loadAdminData();
+    }
+    function deletePromo(i) { const p = getPromos(); p.splice(i, 1); jset('overkoro_promos_db', p); loadAdminData(); }
+
+    const getCatalog = () => jget('overkoro_catalog_db', []);
+    function renderCatalogAdmin() {
+      document.getElementById('adminCatalogList').innerHTML = getCatalog().map((it, i) => `
+        <div class="row"><span><strong>${esc(it.title)}</strong> — ${esc(it.category)}${it.badge ? ' · 🏷️ ' + esc(it.badge) : ''}</span>
+        <span><strong>${esc(it.price)} €</strong> <button class="btn-validate" onclick="editPrice(${i})">✏️ Prix</button> ${delBtn(`deleteCatalogItem(${i})`)}</span></div>`).join('')
+        || '<p style="color:var(--text-muted); font-size:0.85rem;">Catalogue vide : ouvre une fois index.html dans ce navigateur pour charger les formules par défaut.</p>';
+    }
+    function addCatalogItem() {
+      const title = document.getElementById('catTitle').value.trim();
+      const price = parseFloat(document.getElementById('catPrice').value);
+      if (!title || isNaN(price) || price < 0) return alert('Titre et prix valides requis !');
+      const c = getCatalog();
+      if (!c.length) return alert("Ouvre d'abord index.html une fois dans ce navigateur pour charger le catalogue.");
+      c.push({ id: Date.now(), title, price, category: document.getElementById('catCategory').value, badge: document.getElementById('catBadge').value.trim(), features: document.getElementById('catFeatures').value.split(';').map(s => s.trim()).filter(Boolean), isGod: false });
+      jset('overkoro_catalog_db', c);
+      ['catTitle', 'catPrice', 'catBadge', 'catFeatures'].forEach(id => document.getElementById(id).value = '');
+      loadAdminData();
+    }
+    function editPrice(i) {
+      const c = getCatalog();
+      const p = parseFloat(prompt(`Nouveau prix pour « ${c[i].title} » (€) :`, c[i].price));
+      if (isNaN(p) || p < 0) return;
+      c[i].price = p; jset('overkoro_catalog_db', c); loadAdminData();
+    }
+    function deleteCatalogItem(i) {
+      if (!confirm('Supprimer cette formule du site ?')) return;
+      const c = getCatalog(); c.splice(i, 1); jset('overkoro_catalog_db', c); loadAdminData();
+    }
+
+    const ytId = url => { const m = String(url).match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/); return m ? m[1] : null; };
+    function renderPortfolioAdmin() {
+      document.getElementById('adminPortfolioList').innerHTML = jget('overkoro_portfolio_db', []).map((v, i) => `<div class="row"><span>▶️ <strong>${esc(v.title)}</strong> <small style="color:var(--text-muted);">(${esc(v.yt)})</small></span>${delBtn(`deletePortfolioItem(${i})`)}</div>`).join('') || '<p style="color:var(--text-muted); font-size:0.85rem;">Aucune vidéo pour le moment.</p>';
+    }
+    function addPortfolioItem() {
+      const title = document.getElementById('pfTitle').value.trim();
+      const yt = ytId(document.getElementById('pfUrl').value);
+      if (!title || !yt) return alert('Un titre et un lien YouTube valide sont requis !');
+      const items = jget('overkoro_portfolio_db', []);
+      items.push({ title, yt });
+      jset('overkoro_portfolio_db', items);
+      document.getElementById('pfTitle').value = ''; document.getElementById('pfUrl').value = '';
+      loadAdminData();
+    }
+    function deletePortfolioItem(i) { const it = jget('overkoro_portfolio_db', []); it.splice(i, 1); jset('overkoro_portfolio_db', it); loadAdminData(); }
+
+    function exportBackup() {
+      const data = {};
+      BACKUP_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v) data[k] = JSON.parse(v); });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+      a.download = `overkoro-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+    function importBackup(input) {
+      const f = input.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        try {
+          const data = JSON.parse(r.result);
+          if (!confirm('Remplacer les données actuelles par cette sauvegarde ?')) return;
+          BACKUP_KEYS.forEach(k => { if (data[k] !== undefined) jset(k, data[k]); });
+          alert('Sauvegarde restaurée !');
+          loadAdminData();
+        } catch (e) { alert('Fichier de sauvegarde invalide.'); }
+        input.value = '';
+      };
+      r.readAsText(f);
+    }
+
+    function okFilter(list) {
+      const q = (document.getElementById('okQ')?.value || '').toLowerCase(), st = document.getElementById('okS')?.value || '', d = document.getElementById('okD')?.value || '';
+      return list.filter(o => (!st || o.status === st) && (!q || [o.id, o.userName, o.userEmail, o.plan].join(' ').toLowerCase().includes(q)) && (!d || (o.date || '').split('/').reverse().join('-') === d));
+    }
+    function okCsv() {
+      const rows = okFilter(jget('overkoro_orders_db', [])), c = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+      const csv = '\ufeffID;Date;Client;E-mail;Formule;Montant;Paiement;Statut\n' + rows.map(o => [o.id, o.date, o.userName, o.userEmail, o.plan, o.amount, o.paymentStatus, o.status].map(c).join(';')).join('\n');
+      const l = document.createElement('a'); l.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); l.download = 'commandes-overkoro.csv'; l.click();
+    }
+    function okSaveOffer() {
+      const text = document.getElementById('okOfferText').value.trim(), end = document.getElementById('okOfferEnd').value;
+      if (!text || !end) return alert('Renseigne le texte et la date de fin.');
+      jset('overkoro_offer_db', { text, end }); alert('Offre activée !');
+    }
+    function okClearOffer() { jset('overkoro_offer_db', null); alert('Offre arrêtée.'); }
+    window.addEventListener('ok-sync', () => { if (document.body.style.display === 'block') loadAdminData(); });
+
+    function setAvailability(status) {
+      localStorage.setItem('overkoro_availability_status', status);
+      alert("Statut mis à jour !");
+    }
+
+    function loadAdminData() {
+      const users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+      const allOrders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const orders = okFilter(allOrders);
+      const directMsgs = JSON.parse(localStorage.getItem('overkoro_direct_msgs_db')) || [];
+      let coupons = JSON.parse(localStorage.getItem('overkoro_coupons_db')) || [];
+
+      document.getElementById('statUsers').innerText = users.length;
+      document.getElementById('statOrders').innerText = allOrders.length;
+
+      let rev = allOrders.reduce((acc, o) => o.paymentStatus === 'Payé' ? acc + (parseFloat(o.amount) || 0) : acc, 0);
+      document.getElementById('statRevenue').innerText = (Math.round(rev * 100) / 100) + ' €';
+
+      // Commandes
+      const ordersTable = document.getElementById('adminOrdersTable');
+      ordersTable.innerHTML = orders.length === 0 ? `<tr><td colspan="7" style="color:var(--text-muted);">Aucune commande.</td></tr>` : orders.map(o => `
+        <tr>
+          <td><strong>${esc(o.id)}</strong><br>${esc(o.userName)}<br><small style="color:var(--text-muted);">${esc(o.date || '')}</small>${o.eduFile ? `<br><a href="${esc(safeUrl(o.eduFile))}" target="_blank" rel="noopener" style="color:var(--warning-color);">🎓 Justificatif</a>` : ''}</td>
+          <td><strong>${esc(o.plan)}</strong><br><small style="color:var(--text-muted);">${o.amount != null ? (o.basePrice != null && o.amount < o.basePrice ? '<s>' + o.basePrice + ' €</s> → ' : '') + o.amount + ' €' : ''}</small></td>
+          <td><span style="color:${o.paymentStatus === 'Payé' ? 'var(--success-color)' : 'var(--warning-color)'}; font-weight:bold;">${esc(o.paymentStatus || 'Non réglé')}</span>${o.paymentStatus === 'Payé' ? '' : `<br><button class="btn-validate" onclick="validatePayment('${o.id}')">✅ Valider</button>`}</td>
+          <td><a href="${esc(safeUrl(o.link))}" rel="noopener" target="_blank" style="color:var(--accent-color);">🔗 Rushes</a></td>
+          <td>
+            <select onchange="updateOrderStatus('${o.id}', this.value)">
+              <option value="En-attente-justificatif" ${o.status === 'En-attente-justificatif' ? 'selected' : ''}>En attente justificatif</option>
+              <option value="Reçue" ${o.status === 'Reçue' ? 'selected' : ''}>Reçue</option>
+              <option value="En-cours" ${o.status === 'En-cours' ? 'selected' : ''}>En cours</option>
+              <option value="Terminée" ${o.status === 'Terminée' ? 'selected' : ''}>Terminée</option>
+              <option value="Refusée" ${o.status === 'Refusée' ? 'selected' : ''}>Refusée</option>
+            </select>
+          </td>
+          <td>
+            <input type="url" id="delivery-${o.id}" value="${esc(o.deliveryLink || '')}" placeholder="Lien vidéo...">
+            <button class="btn-save" onclick="saveDelivery('${o.id}')">💾 OK</button>
+          </td>
+          <td style="white-space:nowrap;"><button class="btn-validate" onclick="replyOrder('${o.id}')" title="Répondre au client">💬 ${(o.messages || []).length}</button> <button class="btn-danger" onclick="deleteOrder('${o.id}')">X</button></td>
+        </tr>
+      `).join('');
+
+      // Gestion Utilisateurs & Passes
+      const usersTable = document.getElementById('adminUsersTable');
+      usersTable.innerHTML = users.length === 0 ? `<tr><td colspan="6" style="color:var(--text-muted);">Aucun client.</td></tr>` : users.map(u => `
+        <tr>
+          <td><strong>${esc(u.name)}</strong></td>
+          <td>${esc(u.email)}</td>
+          <td>
+            <select data-email="${esc(u.email)}" onchange="updateUserGrade(this.dataset.email, this.value)">
+              <option value="Standard" ${u.loyaltyGrade === 'Standard' ? 'selected' : ''}>Standard</option>
+              <option value="VIP" ${u.loyaltyGrade === 'VIP' ? 'selected' : ''}>VIP</option>
+              <option value="Ultra VIP" ${u.loyaltyGrade === 'Ultra VIP' ? 'selected' : ''}>Ultra VIP</option>
+            </select>
+          </td>
+          <td>
+            <span style="color:${u.activePass ? 'var(--success-color)' : 'var(--text-muted)'}; font-weight:bold;">
+              ${u.activePass || 'Aucun pass'}
+            </span>
+          </td>
+          <td><strong>${u.loyaltyPoints || 0} PTS</strong></td>
+          <td>
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <input type="number" id="ptsInput-${u.id}" placeholder="+/- pts" style="width:90px;">
+              <button class="btn-save" style="font-size:0.75rem; padding:0.3rem 0.5rem;" data-email="${esc(u.email)}" onclick="applyCustomPoints(this.dataset.email, 'ptsInput-${u.id}')">Pts</button>
+              ${u.activePass ? `<button class="btn-danger" style="font-size:0.75rem; padding:0.3rem 0.5rem;" data-email="${esc(u.email)}" onclick="revokeUserPass(this.dataset.email)">❌ Retirer le Pass</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      // Coupons
+      const couponsList = document.getElementById('adminCouponsList');
+      couponsList.innerHTML = coupons.length === 0 ? `<p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">Aucun coupon actif.</p>` : coupons.map((c, idx) => `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card-bg-hover); padding:0.5rem 0.8rem; border-radius:6px; margin-top:0.5rem; font-size:0.85rem;">
+          <span><strong>${esc(c.code)}</strong> — 🎁 ${c.points} Points offerts${okCpInfo(c)}</span>
+          <span><button class="btn-save" style="font-size:0.7rem; padding:0.2rem 0.5rem;" onclick="okEditCoupon(${idx})">✏️</button> <button class="btn-danger" style="font-size:0.7rem; padding:0.2rem 0.5rem;" onclick="deleteCoupon(${idx})">Supprimer</button></span>
+        </div>
+      `).join('');
+
+      renderAdminTabsList();
+      renderPromos(); renderCatalogAdmin(); renderPortfolioAdmin(); renderInbox();
+    }
+
+    function updateUserGrade(email, newGrade) {
+      let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+      const user = users.find(u => u.email === email);
+      if (user) {
+        user.loyaltyGrade = newGrade;
+        localStorage.setItem('overkoro_users_db', JSON.stringify(users));
+        loadAdminData();
+      }
+    }
+
+    function revokeUserPass(email) {
+      if (!confirm("Voulez-vous vraiment retirer le pass actif de ce client ?")) return;
+      let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+      const user = users.find(u => u.email === email);
+      if (user) {
+        user.activePass = "";
+        localStorage.setItem('overkoro_users_db', JSON.stringify(users));
+        
+        let currentUser = JSON.parse(localStorage.getItem('overkoro_current_user'));
+        if (currentUser && currentUser.email === email) {
+          currentUser.activePass = "";
+          localStorage.setItem('overkoro_current_user', JSON.stringify(currentUser));
+        }
+        alert("Pass retiré avec succès du compte client !");
+        loadAdminData();
+      }
+    }
+
+    function applyCustomPoints(email, inputId) {
+      const val = parseInt(document.getElementById(inputId).value);
+      if (isNaN(val)) return alert("Veuillez entrer un nombre de points valide !");
+
+      let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+      const user = users.find(u => u.email === email);
+      if (user) {
+        user.loyaltyPoints = Math.max(0, (user.loyaltyPoints || 0) + val);
+        localStorage.setItem('overkoro_users_db', JSON.stringify(users));
+        alert(`Solde mis à jour (${val >= 0 ? '+' : ''}${val} pts).`);
+        loadAdminData();
+      }
+    }
+
+    function createNewCoupon() {
+      const code = document.getElementById('newCouponCode').value.trim().toUpperCase();
+      const points = parseInt(document.getElementById('newCouponPoints').value);
+
+      if (!code || isNaN(points) || points <= 0) return alert("Veuillez entrer un code et un nombre de points valide !");
+
+      let coupons = JSON.parse(localStorage.getItem('overkoro_coupons_db')) || [];
+      if (coupons.some(c => c.code === code)) return alert("Ce code de coupon existe déjà !");
+
+      coupons.push({ code, points, exp: document.getElementById('newCouponExp').value || '', max: parseInt(document.getElementById('newCouponMax').value) || 0, uses: 0 });
+      localStorage.setItem('overkoro_coupons_db', JSON.stringify(coupons));
+      alert(`Coupon ${code} (${points} pts) créé avec succès !`);
+      document.getElementById('newCouponCode').value = '';
+      document.getElementById('newCouponPoints').value = '';
+      loadAdminData();
+    }
+
+    function deleteCoupon(idx) {
+      let coupons = JSON.parse(localStorage.getItem('overkoro_coupons_db')) || [];
+      coupons.splice(idx, 1);
+      localStorage.setItem('overkoro_coupons_db', JSON.stringify(coupons));
+      loadAdminData();
+    }
+
+    function addNewPatch() {
+      const version = document.getElementById('patchVersion').value.trim();
+      const title = document.getElementById('patchTitle').value.trim();
+      const changesRaw = document.getElementById('patchChanges').value.trim();
+
+      if (!version || !title || !changesRaw) return alert("Remplissez tous les champs du patch note !");
+
+      let patches = JSON.parse(localStorage.getItem('overkoro_patchnotes_db')) || [];
+      patches.unshift({
+        version,
+        title,
+        date: new Date().toLocaleDateString('fr-FR'),
+        changes: changesRaw.split('\n').filter(Boolean)
+      });
+      localStorage.setItem('overkoro_patchnotes_db', JSON.stringify(patches));
+      alert("Patch note publié !");
+      document.getElementById('patchVersion').value = '';
+      document.getElementById('patchTitle').value = '';
+      document.getElementById('patchChanges').value = '';
+      loadAdminData();
+    }
+
+    // --- GESTION & ÉDITION DES ONGLETS ---
+    function renderAdminTabsList() {
+      let tabs = JSON.parse(localStorage.getItem('overkoro_tabs_db')) || [];
+      const list = document.getElementById('adminTabsList');
+      list.innerHTML = tabs.map((t, idx) => `
+        <div style="background:var(--card-bg-hover); padding:0.6rem 0.8rem; border-radius:6px; margin-top:0.4rem; font-size:0.85rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span><strong>${t.label}</strong> (ID: ${t.id})</span>
+            <div style="display:flex; gap:0.3rem;">
+              <button class="btn-validate" style="font-size:0.7rem; padding:0.2rem 0.5rem;" onclick="toggleEditTab(${idx})">✏️ Éditer</button>
+              <button class="btn-danger" style="font-size:0.7rem; padding:0.2rem 0.5rem;" onclick="deleteTab(${idx})">Supprimer</button>
+            </div>
+          </div>
+          <div id="editTabBox-${idx}" style="display:none; margin-top:0.6rem; border-top:1px dashed var(--border-color); padding-top:0.6rem; display:none; gap:0.4rem; flex-direction:column;">
+            <input type="text" id="editTabId-${idx}" value="${t.id}" placeholder="Nouvel ID">
+            <input type="text" id="editTabLabel-${idx}" value="${t.label}" placeholder="Nouveau nom">
+            <textarea id="editTabContent-${idx}" rows="3" placeholder="Contenu de la page">${esc(t.content || '')}</textarea>
+            <button class="btn-save" style="font-size:0.75rem; padding:0.3rem;" onclick="saveEditedTab(${idx})">💾 Enregistrer les modifications</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleEditTab(idx) {
+      const box = document.getElementById(`editTabBox-${idx}`);
+      box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function saveEditedTab(idx) {
+      let tabs = JSON.parse(localStorage.getItem('overkoro_tabs_db')) || [];
+      const newId = document.getElementById(`editTabId-${idx}`).value.trim();
+      const newLabel = document.getElementById(`editTabLabel-${idx}`).value.trim();
+
+      if (!newId || !newLabel) return alert("Remplissez tous les champs !");
+
+      tabs[idx] = { ...tabs[idx], id: newId, label: newLabel, content: document.getElementById(`editTabContent-${idx}`).value.trim() };
+      localStorage.setItem('overkoro_tabs_db', JSON.stringify(tabs));
+      alert("Onglet mis à jour avec succès !");
+      loadAdminData();
+    }
+
+    function addNewTab() {
+      const id = document.getElementById('tabId').value.trim();
+      const label = document.getElementById('tabLabel').value.trim();
+      if (!id || !label) return alert("Remplissez tous les champs !");
+
+      let tabs = JSON.parse(localStorage.getItem('overkoro_tabs_db')) || [];
+      tabs.push({ id, label, content: document.getElementById('tabContent').value.trim() });
+      localStorage.setItem('overkoro_tabs_db', JSON.stringify(tabs));
+      alert("Onglet ajouté !");
+      document.getElementById('tabId').value = '';
+      document.getElementById('tabLabel').value = '';
+      document.getElementById('tabContent').value = '';
+      loadAdminData();
+    }
+
+    function deleteTab(idx) {
+      const t0 = jget('overkoro_tabs_db', [])[idx];
+      if (t0 && ['home', 'account'].includes(t0.id)) return alert('Cet onglet est indispensable au site.');
+      let tabs = JSON.parse(localStorage.getItem('overkoro_tabs_db')) || [];
+      tabs.splice(idx, 1);
+      localStorage.setItem('overkoro_tabs_db', JSON.stringify(tabs));
+      loadAdminData();
+    }
+
+    function updateOrderStatus(orderId, status) {
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = status;
+        if (status === 'Terminée' && (order.plan.includes('Pass') || order.plan.includes('GOD'))) {
+          activateUserPass(order.userEmail, order.plan);
+        }
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        loadAdminData();
+      }
+    }
+
+    function activateUserPass(email, planName) {
+      let users = JSON.parse(localStorage.getItem('overkoro_users_db')) || [];
+      const user = users.find(u => u.email === email);
+      if (user) {
+        user.activePass = planName;
+        localStorage.setItem('overkoro_users_db', JSON.stringify(users));
+        let currentUser = JSON.parse(localStorage.getItem('overkoro_current_user'));
+        if (currentUser && currentUser.email === email) {
+          currentUser.activePass = planName;
+          localStorage.setItem('overkoro_current_user', JSON.stringify(currentUser));
+        }
+      }
+    }
+
+    function saveDelivery(orderId) {
+      const link = document.getElementById('delivery-' + orderId).value.trim();
+      let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        if (link && order.paymentStatus !== 'Payé' && !confirm('⚠️ Paiement non validé pour cette commande. Livrer quand même ?')) return;
+        order.deliveryLink = link;
+        if (link) {
+          order.status = 'Terminée';
+          if (order.plan.includes('Pass') || order.plan.includes('GOD')) {
+            activateUserPass(order.userEmail, order.plan);
+          }
+        }
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        alert("Lien de livraison enregistré et pass activé si applicable !");
+        loadAdminData();
+      }
+    }
+
+    function deleteOrder(orderId) {
+      if (confirm("Supprimer cette commande ?")) {
+        let orders = JSON.parse(localStorage.getItem('overkoro_orders_db')) || [];
+        orders = orders.filter(o => o.id !== orderId);
+        localStorage.setItem('overkoro_orders_db', JSON.stringify(orders));
+        loadAdminData();
+      }
+    }
+
+    function okCpInfo(c) {
+      const exp = c.exp ? new Date(c.exp + 'T23:59:59') < Date.now() ? ' · <span style="color:var(--danger-color)">expiré</span>' : ' · expire le ' + new Date(c.exp).toLocaleDateString('fr-FR') : '';
+      return `${exp} · ${c.uses || 0}${c.max ? '/' + c.max : ''} utilisation(s)`;
+    }
+    function okEditCoupon(i) {
+      const L = jget('overkoro_coupons_db', []), v = parseInt(prompt(`Nouveaux points pour ${L[i].code} :`, L[i].points));
+      if (!v || v <= 0) return; L[i].points = v; jset('overkoro_coupons_db', L); loadAdminData();
+    }
+    function okEditPromo(i) {
+      const L = getPromos(), v = parseFloat(prompt(`Nouveau % pour ${L[i].code} :`, L[i].discount));
+      if (!v || v <= 0 || v > 100) return; L[i].discount = v; jset('overkoro_promos_db', L); loadAdminData();
+    }
+    // Mot de passe admin : PBKDF2-SHA256 (210 000 itérations, sel aléatoire) — format pbkdf2$itérations$sel$empreinte
+    const hexB = h => new Uint8Array(h.match(/../g).map(x => parseInt(x, 16)));
+    const bHex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+    async function okPbk(pw, salt, it) {
+      const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
+      return bHex(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: hexB(salt), iterations: it }, k, 256));
+    }
+    async function okCheckPw(pw, stored) { const [, it, salt, h] = stored.split('$'); return (await okPbk(pw, salt, +it)) === h; }
+    async function okGenHash() {
+      const pw = document.getElementById('okNewPw').value; if (pw.length < 12) return alert('12 caractères minimum.');
+      const salt = bHex(crypto.getRandomValues(new Uint8Array(16))), out = document.getElementById('okHashOut');
+      out.value = `pbkdf2$210000$${salt}$${await okPbk(pw, salt, 210000)}`; out.style.display = 'block'; out.select(); document.getElementById('okNewPw').value = '';
+    }
+    const ADMIN_HASH = "pbkdf2$210000$f143ecd251e6193881a61985f56df584$300efc67a6f71f14de6b6ea622c86d57821d0fbf36a4146822292aa18b056aae";
+    (async () => {
+      let ok = false;
+      for (let t = 0; t < 3 && !ok; t++) {
+        const pw = prompt(t ? `Mot de passe incorrect (${3 - t} essai(s) restant(s)) :` : "Veuillez entrer le mot de passe administrateur :");
+        if (pw === null) break; ok = await okCheckPw(pw, ADMIN_HASH);
+      }
+      if (ok) { document.body.style.display = "block"; loadAdminData(); }
+      else { document.body.innerHTML = "<h2 style='color:#ef4444; text-align:center; margin-top:20vh;'>🔒 Accès refusé.</h2>"; document.body.style.display = "block"; }
+    })();
+
+    /* ===== Facture PDF (impression → "Enregistrer en PDF") ===== */
+    const okInvoice = o => { const w = window.open('', '_blank'); if (!w) return alert('Autorise les pop-ups pour générer la facture.');
+      const m = Number(o.amount || 0).toFixed(2);
+      w.document.write(`<title>Facture ${esc(o.id)}</title><body style="font-family:sans-serif;max-width:620px;margin:40px auto"><h1>Facture ${esc(o.id)}</h1><p><b>Overkoro</b> — montage vidéo<br>Date : ${esc(o.date)}</p><p>Client : ${esc(o.userName)} (${esc(o.userEmail)})</p><table style="width:100%;border-collapse:collapse"><tr><td style="border-bottom:1px solid #ccc;padding:8px">${esc(o.plan)}</td><td style="text-align:right;border-bottom:1px solid #ccc">${m} €</td></tr></table><h2 style="text-align:right">Total payé : ${m} €</h2><p style="color:#666;font-size:12px">TVA non applicable. Paiement reçu.</p><script>onload=()=>print()<\/script>`); w.document.close(); };
+    const okInvoiceId = id => okInvoice((JSON.parse(localStorage.getItem('overkoro_orders_db')) || []).find(o => o.id === id));
+    // PWA sans fichier externe
+    try { const mf = { name: 'Overkoro', short_name: 'Overkoro', start_url: location.href, display: 'standalone', background_color: '#0d0f12', theme_color: '#6366f1', icons: [{ src: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#6366f1"/><text x="50" y="68" font-size="56" text-anchor="middle">🎬</text></svg>'), sizes: 'any', type: 'image/svg+xml' }] };
+      const l = document.createElement('link'); l.rel = 'manifest'; l.href = URL.createObjectURL(new Blob([JSON.stringify(mf)], { type: 'application/manifest+json' })); document.head.appendChild(l); } catch (e) {}
+
+    const OK_TPL = ['Rushes bien reçus ✅ Je m\'y mets, livraison estimée sous 48-72 h.', 'Ta vidéo est prête 🎉 Le lien de téléchargement est dans ton espace client.', 'Peux-tu m\'envoyer les rushes (lien Drive/WeTransfer) ? Merci !', 'Paiement bien reçu, merci 🙏 Ta facture est disponible dans ton espace client.'];
+    const _vp = validatePayment;
+    validatePayment = function (id) { _vp(id); const o = jget('overkoro_orders_db', []).find(x => x.id === id); if (o && o.paymentStatus === 'Payé') okInvoice(o); };
+    const _lad = loadAdminData; let okWarned = false;
+    loadAdminData = function () { _lad(); okDash(); okDash2(); };
+    const okDate = s => { const [d, m, y] = String(s).split('/'); return new Date(+y, m - 1, +d); };
+    function okDash() {
+      const O = jget('overkoro_orders_db', []), paid = O.filter(o => o.paymentStatus === 'Payé'), tot = {}, plans = {}, cl = {};
+      paid.forEach(o => { const d = okDate(o.date), k = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); tot[k] = (tot[k] || 0) + (+o.amount || 0); const p = o.plan.split(' (')[0]; plans[p] = (plans[p] || 0) + 1; cl[o.userName] = (cl[o.userName] || 0) + (+o.amount || 0); });
+      const bars = Object.keys(tot).sort().slice(-6), mx = Math.max(1, ...bars.map(k => tot[k]));
+      const top = (m, f) => Object.entries(m).sort((x, y) => y[1] - x[1]).slice(0, 5).map(([k, v]) => `<li>${esc(k)} — <b>${f(v)}</b></li>`).join('') || '<li style="color:var(--text-muted)">—</li>';
+      const act = O.filter(o => o.status === 'Reçue' || o.status === 'En-cours').map(o => ({ o, dl: new Date(okDate(o.date).getTime() + 3 * 864e5) })).sort((x, y) => x.dl - y.dl);
+      const late = act.filter(x => x.dl - Date.now() < 864e5).length;
+      if (late && !okWarned) { okWarned = true; alert(`⏰ ${late} commande(s) arrivent à leur date limite !`); }
+      document.getElementById('okDash').innerHTML = `<h3>📊 Tableau de bord</h3><div style="display:flex;align-items:flex-end;gap:.6rem;height:130px;margin:1rem 0">${bars.map(k => `<div style="flex:1;text-align:center;font-size:.7rem"><div style="height:${Math.round(tot[k] / mx * 100)}px;background:var(--accent-color);border-radius:4px 4px 0 0"></div>${k.slice(2)}<br><b>${Math.round(tot[k])}€</b></div>`).join('') || '<span style="color:var(--text-muted)">Pas encore de ventes payées.</span>'}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem"><div><b>🏆 Formules les + vendues</b><ul style="margin-left:1.2rem">${top(plans, v => v + '×')}</ul></div><div><b>💎 Clients les + fidèles</b><ul style="margin-left:1.2rem">${top(cl, v => Math.round(v) + ' €')}</ul></div></div>
+        <h3 style="margin-top:1.5rem">📅 Planning des livraisons (deadline = commande + 3 j)</h3><table><tbody>${act.map(({ o, dl }) => { const d = Math.ceil((dl - Date.now()) / 864e5); return `<tr><td>${esc(o.id)} · ${esc(o.userName)}</td><td style="color:${d <= 1 ? 'var(--danger-color)' : 'inherit'};font-weight:700">${dl.toLocaleDateString('fr-FR')} (${d < 0 ? 'en retard' : d + ' j'})</td><td><input type="url" id="okPv-${o.id}" value="${esc(o.preview || '')}" placeholder="Lien aperçu filigrané"></td><td><button class="btn-save" onclick="okSavePv('${o.id}')">OK</button></td></tr>`; }).join('') || '<tr><td style="color:var(--text-muted)">Aucune commande en cours.</td></tr>'}</tbody></table>
+        <h3 style="margin-top:1.5rem">🧾 Factures</h3>${paid.slice(-8).reverse().map(o => `<button class="btn-refresh" style="margin:.2rem" onclick="okInvoiceId('${o.id}')">${esc(o.id)}</button>`).join('') || '<span style="color:var(--text-muted)">Aucune.</span>'}`;
+      const ba = jget('overkoro_ba_db', {}), rv = jget('overkoro_reviews_db', []);
+      document.getElementById('okCfg').innerHTML = `<h3>✂️ Avant / Après (accueil)</h3><div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0"><input type="url" id="okBAb" value="${esc(ba.before || '')}" placeholder="URL image AVANT" style="flex:1;min-width:200px"><input type="url" id="okBAa" value="${esc(ba.after || '')}" placeholder="URL image APRÈS" style="flex:1;min-width:200px"><button class="btn-save" onclick="okSaveBA()">Enregistrer</button></div><h3>⭐ Avis clients</h3>${rv.map((r, i) => `<p style="margin:.4rem 0">${esc(r.name)} ${'★'.repeat(r.stars)} — ${esc(r.text)} <button class="btn-danger" style="font-size:.7rem;padding:.15rem .4rem" onclick="okDelRv(${i})">✕</button></p>`).join('') || '<span style="color:var(--text-muted)">Aucun avis.</span>'}`;
+    }
+    function okDash2() {
+      const sl = jget('overkoro_slots_db', null), gf = jget('overkoro_gift_db', []), v = jget('overkoro_views_db', {}), O = jget('overkoro_orders_db', []);
+      const inactive = jget('overkoro_users_db', []).map(u => { const d = O.filter(o => o.userEmail === u.email).map(o => okDate(o.date).getTime()); return { u, last: d.length ? Math.max(...d) : 0 }; }).filter(x => x.last && Date.now() - x.last > 30 * 864e5);
+      document.getElementById('okCfg2').innerHTML = `<h3>🔥 Places limitées</h3><div style="display:flex;gap:.5rem;margin:.6rem 0"><input type="number" id="okSl" value="${sl ? sl.left : ''}" placeholder="Places restantes (vide = masqué)" style="max-width:260px"><button class="btn-save" onclick="okSaveSlots()">Enregistrer</button></div>
+      <h3>🎁 Cartes cadeaux (valeur en €)</h3><div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0"><input type="text" id="okGC" placeholder="Code (ex: CADEAU20)" style="max-width:200px"><input type="number" id="okGV" placeholder="Valeur €" style="max-width:120px"><button class="btn-save" onclick="okAddGift()">Créer</button></div>${gf.map((g, i) => `<p style="margin:.3rem 0"><b>${esc(g.code)}</b> — ${g.value} € ${g.used ? '(utilisée)' : ''} <button class="btn-danger" style="font-size:.7rem;padding:.15rem .4rem" onclick="okDelGift(${i})">✕</button></p>`).join('')}
+      <h3 style="margin-top:1rem">📈 Pages vues</h3><p>${Object.entries(v).sort((x, y) => y[1] - x[1]).map(([k, n]) => `${esc(k)} : <b>${n}</b>`).join(' · ') || '—'}</p>
+      <h3 style="margin-top:1rem">💌 Clients à relancer (30 j+ sans commande)</h3>${inactive.map(x => `<p style="margin:.3rem 0">${esc(x.u.name)} (${esc(x.u.email)}) <button class="btn-refresh" onclick="okBack('${esc(x.u.email)}')">Créer code −10 %</button></p>`).join('') || '<span style="color:var(--text-muted)">Personne.</span>'}`;
+    }
+    function okSaveSlots() { const v = document.getElementById('okSl').value; jset('overkoro_slots_db', v === '' ? null : { left: Math.max(0, parseInt(v) || 0) }); alert('Enregistré !'); }
+    function okAddGift() { const code = document.getElementById('okGC').value.trim().toUpperCase(), value = parseFloat(document.getElementById('okGV').value); if (!code || !(value > 0)) return alert('Code + valeur requis.'); const g = jget('overkoro_gift_db', []); if (g.some(x => x.code === code)) return alert('Code existant.'); g.push({ code, value, used: false }); jset('overkoro_gift_db', g); okDash2(); }
+    function okDelGift(i) { const g = jget('overkoro_gift_db', []); g.splice(i, 1); jset('overkoro_gift_db', g); okDash2(); }
+    function okBack(email) {
+      const code = 'BACK' + Math.random().toString(36).slice(2, 6).toUpperCase(), P = getPromos(), e = new Date(Date.now() + 14 * 864e5).toISOString().slice(0, 10);
+      P.push({ code, discount: 10, exp: e, max: 1, uses: 0 }); jset('overkoro_promos_db', P);
+      navigator.clipboard?.writeText(`Ça fait un moment ! Voici ton code −10 % : ${code} (valable 14 jours) — Overkoro`); alert(`Code ${code} créé (message copié à envoyer à ${email}).`); loadAdminData();
+    }
+    async function okTestMail() {
+      const r = await okMail('✅ Test Overkoro : si tu lis ce message, les notifications e-mail fonctionnent.');
+      alert(r.ok ? 'Requête acceptée. Regarde ta boîte (et les spams). Si rien n\'arrive, clique d\'abord sur le lien d\'activation FormSubmit reçu par e-mail.' : 'Échec : ' + r.msg);
+    }
+    document.getElementById('okMailTo').textContent = OK.EMAIL;
+    function okSavePv(id) { const O = jget('overkoro_orders_db', []), o = O.find(x => x.id === id); o.preview = document.getElementById('okPv-' + id).value.trim(); jset('overkoro_orders_db', O); alert('Aperçu enregistré !'); }
+    function okSaveBA() { jset('overkoro_ba_db', { before: document.getElementById('okBAb').value.trim(), after: document.getElementById('okBAa').value.trim() }); alert('Enregistré !'); }
+    function okDelRv(i) { const r = jget('overkoro_reviews_db', []); r.splice(i, 1); jset('overkoro_reviews_db', r); okDash(); }
+  </script>
+</body>
+</html>
